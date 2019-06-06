@@ -2,19 +2,17 @@
 Layout
 ========================================================================== */
 #main {
-    margin-top: 45px;
     position: relative;
-
-    @include desktop {
-        margin-top: 108px;
-    }
 }
 
-.intro {
-    p {
-        font-size: em(18);
-        font-weight: bold;
-    }
+
+model-viewer {
+    height: 100vh;
+    width: 100vw;
+}
+
+#default-ar-button {
+    bottom: 40px;
 }
 
 .offline {

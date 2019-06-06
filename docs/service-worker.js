@@ -31,9 +31,9 @@ var CURRENT_CACHES = {
     prefetch: 'prefetch-cache-v' + version
 };
 var urlsToPrefetch = [
-    'assets/firestarter/css/main.css',
-    'assets/firestarter/js/main.js',
-    'assets/firestarter/css/fonts/icomoon.woff',
+    'assets/ar/css/main.css',
+    'assets/ar/js/main.js',
+    'assets/ar/css/fonts/icomoon.woff',
     'manifest.json',
     OFFLINE_URL,
     'index.html?homescreen=1',

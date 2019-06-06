@@ -2,6 +2,7 @@
   "name": "firestarter",
   "version": "1.8.0",
   "dependencies": {
+    "@google/model-viewer": "^0.3.1",
     "browserify-shim": "^3.8.12",
     "dot": "^1.1.2",
     "gsap": "^1.19.1",
@@ -86,7 +87,7 @@
     "baseUrl": "./",
     "directories": {
       "source": "src",
-      "assets": "assets/firestarter",
+      "assets": "assets/ar",
       "destination": "build",
       "temporary": "tmp",
       "//": "Directories relative to `source` directory",
@@ -96,6 +97,8 @@
       "css": "_css",
       "fonts": "_fonts",
       "js": "_js",
+      "vendor": "_vendor",
+      "models": "_models",
       "data": "_data"
     },
     "entries": {
