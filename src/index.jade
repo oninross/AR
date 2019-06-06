@@ -5,26 +5,26 @@ block config
     - var baseUrl = './'
 
 block content
-    //- model-viewer(
-    //-     ar='',
-    //-     alt='A model of a camp ground',
-    //-     auto-rotate='',
-    //-     background-color='#29a7f5',
-    //-     camera-controls='',
-    //-     ios-src=baseUrl + 'assets/ar/models/model.usdz',
-    //-     src=baseUrl + 'assets/ar/models/model.gltf',
-    //-     shadow-intensity='1',
-    //-     unstable-webxr=''
-    //- )
-
-
     model-viewer(
-        src=baseUrl + 'assets/ar/models/Astronaut.glb',
         ar='',
+        alt='A model of a camp ground',
+        auto-rotate='',
+        background-color='#29a7f5',
         camera-controls='',
-        alt='A 3D model of an astronaut',
-        background-color='#222',
-        ios-src=baseUrl + 'assets/ar/models/Astronaut.usdz',
-        magic-leap='',
+        ios-src=baseUrl + 'assets/ar/models/model.usdz',
+        src=baseUrl + 'assets/ar/models/model.gltf',
+        shadow-intensity='1',
         unstable-webxr=''
     )
+
+
+    //- model-viewer(
+    //-     src=baseUrl + 'assets/ar/models/Astronaut.glb',
+    //-     ar='',
+    //-     camera-controls='',
+    //-     alt='A 3D model of an astronaut',
+    //-     background-color='#222',
+    //-     ios-src=baseUrl + 'assets/ar/models/Astronaut.usdz',
+    //-     magic-leap='',
+    //-     unstable-webxr=''
+    //- )
