@@ -1,5 +1,9 @@
 extends _layouts/base
 
+block config
+    //- Correct base url pathing for this page
+    - var baseUrl = './'
+
 block content
     //- model-viewer(
     //-     ar='',
@@ -7,20 +11,20 @@ block content
     //-     auto-rotate='',
     //-     background-color='#29a7f5',
     //-     camera-controls='',
-    //-     ios-src='/assets/ar/models/model.usdz',
-    //-     src='/assets/ar/models/model.gltf',
+    //-     ios-src=baseUrl + 'assets/ar/models/model.usdz',
+    //-     src=baseUrl + 'assets/ar/models/model.gltf',
     //-     shadow-intensity='1',
     //-     unstable-webxr=''
     //- )
 
 
     model-viewer(
-        src='/assets/ar/models/Astronaut.glb',
+        src=baseUrl + 'assets/ar/models/Astronaut.glb',
         ar='',
         camera-controls='',
         alt='A 3D model of an astronaut',
         background-color='#222',
-        ios-src='/assets/ar/models/Astronaut.usdz',
+        ios-src=baseUrl + 'assets/ar/models/Astronaut.usdz',
         magic-leap='',
         unstable-webxr=''
     )
