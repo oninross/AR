@@ -88,7 +88,7 @@
     "directories": {
       "source": "src",
       "assets": "assets/ar",
-      "destination": "build",
+      "destination": "docs",
       "temporary": "tmp",
       "//": "Directories relative to `source` directory",
       "modules": "_modules",
