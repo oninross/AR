@@ -3,6 +3,7 @@ block config
     //- Setup site's base URL to match the "baseUrl" key within `package.json`
     //- Otherwise default to relative pathing
     - var baseUrl = config.baseUrl || './'
+    - var isMarkerless = config.isMarkerless || './'
 
 doctype html
 html.no-js(lang='en')
@@ -47,11 +48,12 @@ html.no-js(lang='en')
             block content
 
         block scripts
-            // Loads <model-viewer> for modern browsers:
-            script(type='module', src='https://unpkg.com/@google/model-viewer/dist/model-viewer.js')
+            if isMarkerless
+                // Loads <model-viewer> for modern browsers:
+                script(type='module', src='https://unpkg.com/@google/model-viewer/dist/model-viewer.js')
 
-            // Loads <model-viewer> for old browsers like IE11:
-            script(nomodule='', src='https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js')
+                // Loads <model-viewer> for old browsers like IE11:
+                script(nomodule='', src='https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js')
 
             script(src= baseUrl + 'assets/ar/js/main.js')
 
