@@ -1,0 +1,31 @@
+extends ../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../'
+
+block content
+  //- Hamburger
+  model-viewer(
+      alt = 'A 3D model of a hamburger',
+      ar = '',
+      auto-rotate = '',
+      background-color = '#fa632b',
+      camera-controls = '',
+      ios-src = baseUrl + 'assets/ar/models/Hamburger/Hamburger.usdz',
+      poster = baseUrl + 'assets/ar/images/poster.jpg',
+      shadow-intensity = '1',
+      src = baseUrl + 'assets/ar/models/Hamburger/Hamburger.gltf',
+  )
+
+  //- Astronaut
+  //- model-viewer(
+  //-     src = baseUrl + 'assets/ar/models/Astronaut.glb',
+  //-     ar = '',
+  //-     camera-controls = '',
+  //-     alt = 'A 3D model of an astronaut',
+  //-     background-color = '#222',
+  //-     ios-src = baseUrl + 'assets/ar/models/Astronaut.usdz',
+  //-     magic-leap = '',
+  //-     unstable-webxr = ''
+  //- )

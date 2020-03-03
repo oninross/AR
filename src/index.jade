@@ -1,0 +1,14 @@
+extends _layouts/base
+
+block config
+    //- Correct base url pathing for this page
+    - var baseUrl = './'
+
+block content
+    .container
+        h2 AR Models
+        ul
+            li
+                a(href='./book') Book
+            li
+                a(href='./hamburger') Hamburger

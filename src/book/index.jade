@@ -1,0 +1,16 @@
+extends ../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../'
+
+block content
+  model-viewer(
+      ar = '',
+      autoplay = '',
+      auto-rotate = '',
+      background-color = '#1f1f1f',
+      camera-controls = '',
+      src = baseUrl + 'assets/ar/models/medieval_fantasy_book/scene.gltf',
+  )
+
