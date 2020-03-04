@@ -6,6 +6,7 @@ import browserSyncLib from 'browser-sync';
 import pjson from './package.json';
 import minimist from 'minimist';
 import glob from 'glob';
+import shell from 'gulp-shell';
 
 // Load all gulp plugins based on their names
 // EX: gulp-copy -> copy
@@ -37,6 +38,11 @@ glob.sync('./gulp/**/*.js').filter(function(file) {
   require(file)(gulp, plugins, args, config, taskTarget, browserSync);
 });
 
+// Firebase deploy
+gulp.task('firebase', shell.task([
+  'firebase deploy'
+]))
+
 // Default task
 gulp.task('default', ['clean'], () => {
   gulp.start('build');
@@ -47,7 +53,9 @@ gulp.task('build', [
   'copy',
   'copyFonts',
   'copyVendor',
+  'copyPatterns',
   'copyModels',
+  'copyVideos',
   'imagemin',
   'jade',
   'sass',
@@ -60,7 +68,9 @@ gulp.task('serve', [
   'copy',
   'copyFonts',
   'copyVendor',
+  'copyPatterns',
   'copyModels',
+  'copyVideos',
   'jade',
   'sass',
   'browserify',

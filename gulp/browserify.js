@@ -64,6 +64,10 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
           .pipe(gulp.dest(dest))
           // Show which file was bundled and how long it took
           .on('end', function() {
+            if (args.production && args.deploy) {
+              gulp.start('firebase');
+            }
+
             let time = (new Date().getTime() - startTime) / 1000;
             console.log(
               plugins.util.colors.cyan(entry)

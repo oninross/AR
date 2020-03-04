@@ -4,39 +4,47 @@ block config
     //- Otherwise default to relative pathing
     - var baseUrl = config.baseUrl || './'
     - var isMarkerless = config.isMarkerless || './'
+    - var isUsingMarkers = config.isUsingMarkers || './'
 
 doctype html
 html.no-js(lang='en')
     head
         meta(charset='utf-8')
-        meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+        meta(http-equiv='X-UA-Compatible' content='IE=edge,chrome=1')
 
         title AR Firestarter
 
         meta(name='description', content= 'A quick, easy front-end framework and setup for any project')
-        meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=5.0')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=5.0')
 
-        link(rel='manifest', href='/manifest.json')
-        meta(name='mobile-web-app-capable', content='yes')
-        meta(name='apple-mobile-web-app-capable', content='yes')
-        meta(name='msapplication-TileColor', content='#000000')
+        link(rel='manifest' href='/manifest.json')
+        meta(name='mobile-web-app-capable' content='yes')
+        meta(name='apple-mobile-web-app-capable' content='yes')
+        meta(name='msapplication-TileColor' content='#000000')
         meta(name='msapplication-TileImage', content= baseUrl + 'assets/ar/images/favicon/ms-icon-144x144.png')
-        meta(name='theme-color', content='#000000')
+        meta(name='theme-color' content='#000000')
 
-        link(rel='apple-touch-icon', sizes='57x57', href= baseUrl + 'assets/ar/images/favicon/apple-icon-57x57.png')
-        link(rel='apple-touch-icon', sizes='60x60', href= baseUrl + 'assets/ar/images/favicon/apple-icon-60x60.png')
-        link(rel='apple-touch-icon', sizes='72x72', href= baseUrl + 'assets/ar/images/favicon/apple-icon-72x72.png')
-        link(rel='apple-touch-icon', sizes='76x76', href= baseUrl + 'assets/ar/images/favicon/apple-icon-76x76.png')
-        link(rel='apple-touch-icon', sizes='114x114', href= baseUrl + 'assets/ar/images/favicon/apple-icon-114x114.png')
-        link(rel='apple-touch-icon', sizes='120x120', href= baseUrl + 'assets/ar/images/favicon/apple-icon-120x120.png')
-        link(rel='apple-touch-icon', sizes='144x144', href= baseUrl + 'assets/ar/images/favicon/apple-icon-144x144.png')
-        link(rel='apple-touch-icon', sizes='152x152', href= baseUrl + 'assets/ar/images/favicon/apple-icon-152x152.png')
-        link(rel='apple-touch-icon', sizes='180x180', href= baseUrl + 'assets/ar/images/favicon/apple-icon-180x180.png')
-        link(rel='icon', type='image/png', sizes='192x192', href= baseUrl + 'assets/ar/images/favicon/android-icon-192x192.png')
+        link(rel='apple-touch-icon' sizes='57x57', href= baseUrl + 'assets/ar/images/favicon/apple-icon-57x57.png')
+        link(rel='apple-touch-icon' sizes='60x60', href= baseUrl + 'assets/ar/images/favicon/apple-icon-60x60.png')
+        link(rel='apple-touch-icon' sizes='72x72', href= baseUrl + 'assets/ar/images/favicon/apple-icon-72x72.png')
+        link(rel='apple-touch-icon' sizes='76x76', href= baseUrl + 'assets/ar/images/favicon/apple-icon-76x76.png')
+        link(rel='apple-touch-icon' sizes='114x114', href= baseUrl + 'assets/ar/images/favicon/apple-icon-114x114.png')
+        link(rel='apple-touch-icon' sizes='120x120', href= baseUrl + 'assets/ar/images/favicon/apple-icon-120x120.png')
+        link(rel='apple-touch-icon' sizes='144x144', href= baseUrl + 'assets/ar/images/favicon/apple-icon-144x144.png')
+        link(rel='apple-touch-icon' sizes='152x152', href= baseUrl + 'assets/ar/images/favicon/apple-icon-152x152.png')
+        link(rel='apple-touch-icon' sizes='180x180', href= baseUrl + 'assets/ar/images/favicon/apple-icon-180x180.png')
+        link(rel='icon' type='image/png' sizes='192x192', href= baseUrl + 'assets/ar/images/favicon/android-icon-192x192.png')
 
-        link(rel='icon', type='image/png', sizes='32x32', href= baseUrl + 'assets/ar/images/favicon/favicon-32x32.png')
-        link(rel='icon', type='image/png', sizes='96x96', href= baseUrl + 'assets/ar/images/favicon/favicon-96x96.png')
-        link(rel='icon', type='image/png', sizes='16x16', href= baseUrl + 'assets/ar/images/favicon/favicon-16x16.png')
+        link(rel='icon' type='image/png' sizes='32x32', href= baseUrl + 'assets/ar/images/favicon/favicon-32x32.png')
+        link(rel='icon' type='image/png' sizes='96x96', href= baseUrl + 'assets/ar/images/favicon/favicon-96x96.png')
+        link(rel='icon' type='image/png' sizes='16x16', href= baseUrl + 'assets/ar/images/favicon/favicon-16x16.png')
+
+        if isUsingMarkers
+            script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-master.min.js')
+            script(src=baseUrl + 'assets/ar/js/vendor/arjs/aframe-ar.js')
+            script.
+                ARjs.Context.baseURL = '../assets/ar/js/vendor/three.js/'
+            script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-extras.loaders.min.js')
 
         block stylesheets
             link(rel='stylesheet', href= baseUrl + 'assets/ar/css/main.css')
@@ -50,10 +58,10 @@ html.no-js(lang='en')
         block scripts
             if isMarkerless
                 // Loads <model-viewer> for modern browsers:
-                script(type='module', src='https://unpkg.com/@google/model-viewer/dist/model-viewer.js')
+                script(type='module', src=baseUrl + 'assets/ar/js/vendor/model-viewer/model-viewer.js')
 
                 // Loads <model-viewer> for old browsers like IE11:
-                script(nomodule='', src='https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js')
+                script(nomodule='', src=baseUrl + 'assets/ar/js/vendor/model-viewer/model-viewer-legacy.js')
 
             script(src= baseUrl + 'assets/ar/js/main.js')
 
