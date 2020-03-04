@@ -1,6 +1,6 @@
 'use strict';
 
-import scrollMonitor from 'scrollMonitor';
+// import scrollMonitor from 'scrollMonitor';
 
 export default class MaterialDesign {
     constructor() {
@@ -55,21 +55,21 @@ export default class MaterialDesign {
 
 
         // cards
-        const card = document.getElementsByClassName('card');
-        if (card.length > 0) {
-            for (let i = 0, l = card.length; i < l; i++) {
-                let el = card[i];
-                let cardWatcher = scrollMonitor.create(el);
+        // const card = document.getElementsByClassName('card');
+        // if (card.length > 0) {
+        //     for (let i = 0, l = card.length; i < l; i++) {
+        //         let el = card[i];
+        //         let cardWatcher = scrollMonitor.create(el);
 
-                cardWatcher.enterViewport(function () {
-                    el.classList.add('-show', this.isInViewport);
-                });
+        //         cardWatcher.enterViewport(function () {
+        //             el.classList.add('-show', this.isInViewport);
+        //         });
 
-                cardWatcher.exitViewport(function () { });
-            }
+        //         cardWatcher.exitViewport(function () { });
+        //     }
 
-            scrollMonitor.recalculateLocations();
-        }
+        //     scrollMonitor.recalculateLocations();
+        // }
     }
 
     toaster(msg = "Toaster message", ttl = 5, isReload = false) {
