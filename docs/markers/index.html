@@ -24,54 +24,52 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/ar/images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="../assets/ar/images/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/ar/images/favicon/favicon-16x16.png">
-    <script src="../assets/ar/js/vendor/aframe/aframe-master.min.js"></script>
-    <script src="../assets/ar/js/vendor/aframe/aframe-ar.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-v1.0.4.min.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-ar.min.js"></script>
     <script>ARjs.Context.baseURL = '../assets/ar/js/vendor/three.js/'</script>
     <script src="../assets/ar/js/vendor/aframe/aframe-extras.loaders.min.js"></script>
+    <script src="../assets/ar/js/main.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
-  <body><a href="#main" class="skip-link">Skip to content</a>
-    <main id="main">
-      <a-scene embedded="" arjs="debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;">
-        <a-assets>
-          <a-asset-item id="tokyo" src="/assets/ar/models/littlest_tokyo/scene.gltf"></a-asset-item>
-          <a-asset-item id="lighthouse" src="/assets/ar/models/the_lighthouse/scene.gltf"></a-asset-item>
-          <a-asset-item id="mill" src="/assets/ar/models/the_mill/scene.gltf"></a-asset-item>
-          <a-asset-item id="drone" src="/assets/ar/models/mech_drone/scene.gltf"></a-asset-item>
-          <a-asset-item id="camp-obj" src="/assets/ar/models/model.obj"></a-asset-item>
-          <a-asset-item id="camp-mtl" src="/assets/ar/models/materials.mtl"></a-asset-item>
-          <video id="beacons" webkit-playsinline="true" playsinline="true" loop controls src="/assets/ar/videos/beacons.mp4"></video>
-        </a-assets>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-url.patt">
-          <a-entity scale="0.3 0.3 0.3">
-            <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9" shadow=""></a-box>
-            <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E" shadow=""></a-sphere>
-            <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D" shadow=""></a-cylinder>
-            <a-plane position="0 0 0" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow=""></a-plane>
-          </a-entity>
-        </a-marker>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-ar.patt">
-          <a-entity obj-model="obj: #camp-obj; mtl: #camp-mtl" scale="0.2 0.2 0.2"></a-entity>
-        </a-marker>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-lighthouse.patt">
-          <a-gltf-model src="#lighthouse" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 0 0"></a-gltf-model>
-        </a-marker>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-mill.patt">
-          <a-gltf-model src="#mill" position="0 0 0" scale="0.025 0.025 0.025" rotation="0 0 0"></a-gltf-model>
-        </a-marker>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-tokyo.patt">
-          <a-gltf-model src="#tokyo" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 0 0" animation-mixer></a-gltf-model>
-        </a-marker>
-        <a-marker type="pattern" url="/assets/ar/patterns/pattern-mech.patt">
-          <a-gltf-model src="#drone" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 180 0" animation-mixer></a-gltf-model>
-        </a-marker>
-        <a-marker id="hiroMarker" type="pattern" markerhandler emitevents="true" url="/assets/ar/patterns/pattern-hiro.patt">
-          <a-video src="#beacons" width="1.6" height="0.9" rotation="270 0 0" autoplay></a-video>
-        </a-marker>
-        <a-camera-static></a-camera-static>
-      </a-scene>
-    </main>
-    <script src="../assets/ar/js/main.js"></script>
+  <body style="margin: 0px; overflow: hidden;"><a href="#main" class="skip-link">Skip to content</a>
+    <a-scene embedded="" arjs="debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;">
+      <a-assets>
+        <a-asset-item id="tokyo" src="/assets/ar/models/littlest_tokyo/scene.gltf"></a-asset-item>
+        <a-asset-item id="lighthouse" src="/assets/ar/models/the_lighthouse/scene.gltf"></a-asset-item>
+        <a-asset-item id="mill" src="/assets/ar/models/the_mill/scene.gltf"></a-asset-item>
+        <a-asset-item id="drone" src="/assets/ar/models/mech_drone/scene.gltf"></a-asset-item>
+        <a-asset-item id="camp-obj" src="/assets/ar/models/model.obj"></a-asset-item>
+        <a-asset-item id="camp-mtl" src="/assets/ar/models/materials.mtl"></a-asset-item>
+        <video id="beacons" webkit-playsinline="true" playsinline="true" loop controls src="/assets/ar/videos/beacons.mp4"></video>
+      </a-assets>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-url.patt">
+        <a-entity scale="0.3 0.3 0.3">
+          <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9" shadow=""></a-box>
+          <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E" shadow=""></a-sphere>
+          <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D" shadow=""></a-cylinder>
+          <a-plane position="0 0 0" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow=""></a-plane>
+        </a-entity>
+      </a-marker>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-ar.patt">
+        <a-entity obj-model="obj: #camp-obj; mtl: #camp-mtl" scale="0.2 0.2 0.2"></a-entity>
+      </a-marker>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-lighthouse.patt">
+        <a-gltf-model src="#lighthouse" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 0 0"></a-gltf-model>
+      </a-marker>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-mill.patt">
+        <a-gltf-model src="#mill" position="0 0 0" scale="0.025 0.025 0.025" rotation="0 0 0"></a-gltf-model>
+      </a-marker>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-tokyo.patt">
+        <a-gltf-model src="#tokyo" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 0 0" animation-mixer></a-gltf-model>
+      </a-marker>
+      <a-marker type="pattern" url="/assets/ar/patterns/pattern-mech.patt">
+        <a-gltf-model src="#drone" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 180 0" animation-mixer></a-gltf-model>
+      </a-marker>
+      <a-marker id="hiroMarker" type="pattern" markerhandler emitevents="true" url="/assets/ar/patterns/pattern-hiro.patt">
+        <a-video src="#beacons" width="1.6" height="0.9" rotation="270 0 0" autoplay></a-video>
+      </a-marker>
+      <a-camera-static></a-camera-static>
+    </a-scene>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
       <div class="toaster__card -refresh toaster{{= it.ind }}">
         <p>{{! it.message }}</p>
