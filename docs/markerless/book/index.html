@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>AR Firestarter</title>
-    <meta name="description" content="A quick, easy front-end framework and setup for any project">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+    <meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1">
     <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,12 +28,10 @@
   </head>
   <body><a href="#main" class="skip-link">Skip to content</a>
     <main id="main">
-      <model-viewer ar="" autoplay auto-rotate="" background-color="#1f1f1f" camera-controls="" src="../../assets/ar/models/medieval_fantasy_book/scene.gltf"></model-viewer>
+      <model-viewer alt="A 3D model of a book" ar="" ar-scale="" autoplay auto-rotate="" background-color="#1f1f1f" camera-controls="" magic-leap="" shadow-intensity="1" src="../../assets/ar/models/medieval_fantasy_book/scene.gltf" quick-look-browsers=""></model-viewer>
     </main>
-    <!-- Loads <model-viewer> for modern browsers:-->
-    <script type="module" src="../../assets/ar/js/vendor/model-viewer/model-viewer.js"></script>
-    <!-- Loads <model-viewer> for old browsers like IE11:-->
-    <script nomodule="" src="../../assets/ar/js/vendor/model-viewer/model-viewer-legacy.js"></script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+    <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
     <script src="../../assets/ar/js/main.js"></script>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
       <div class="toaster__card -refresh toaster{{= it.ind }}">

@@ -55096,6 +55096,258 @@ var GLTFLoader = ( function () {
 
 } )();
 
+var _a$1, _b;
+const $retainerCount = Symbol('retainerCount');
+const $recentlyUsed = Symbol('recentlyUsed');
+const $evict = Symbol('evict');
+const $evictionThreshold = Symbol('evictionThreshold');
+const $cache = Symbol('cache');
+class CacheEvictionPolicy {
+    constructor(cache, evictionThreshold = 5) {
+        this[_a$1] = new Map();
+        this[_b] = [];
+        this[$cache] = cache;
+        this[$evictionThreshold] = evictionThreshold;
+    }
+    set evictionThreshold(value) {
+        this[$evictionThreshold] = value;
+        this[$evict]();
+    }
+    get evictionThreshold() {
+        return this[$evictionThreshold];
+    }
+    get cache() {
+        return this[$cache];
+    }
+    retainerCount(key) {
+        return this[$retainerCount].get(key) || 0;
+    }
+    reset() {
+        this[$retainerCount].clear();
+        this[$recentlyUsed] = [];
+    }
+    retain(key) {
+        if (!this[$retainerCount].has(key)) {
+            this[$retainerCount].set(key, 0);
+        }
+        this[$retainerCount].set(key, this[$retainerCount].get(key) + 1);
+        const recentlyUsedIndex = this[$recentlyUsed].indexOf(key);
+        if (recentlyUsedIndex !== -1) {
+            this[$recentlyUsed].splice(recentlyUsedIndex, 1);
+        }
+        this[$recentlyUsed].unshift(key);
+        this[$evict]();
+    }
+    release(key) {
+        if (this[$retainerCount].has(key)) {
+            this[$retainerCount].set(key, Math.max(this[$retainerCount].get(key) - 1, 0));
+        }
+        this[$evict]();
+    }
+    [(_a$1 = $retainerCount, _b = $recentlyUsed, $evict)]() {
+        if (this[$recentlyUsed].length < this[$evictionThreshold]) {
+            return;
+        }
+        for (let i = this[$recentlyUsed].length - 1; i >= this[$evictionThreshold]; --i) {
+            const key = this[$recentlyUsed][i];
+            const retainerCount = this[$retainerCount].get(key);
+            if (retainerCount === 0) {
+                this[$cache].delete(key);
+                this[$recentlyUsed].splice(i, 1);
+            }
+        }
+    }
+}
+
+var _a$2, _b$1;
+const loadWithLoader = (url, loader, progressCallback = () => { }) => {
+    const onProgress = (event) => {
+        progressCallback(event.loaded / event.total);
+    };
+    return new Promise((resolve, reject) => {
+        loader.load(url, resolve, onProgress, reject);
+    });
+};
+const cache = new Map();
+const preloaded = new Map();
+let dracoDecoderLocation;
+const dracoLoader = new DRACOLoader();
+const $loader = Symbol('loader');
+const $evictionPolicy = Symbol('evictionPolicy');
+const $GLTFInstance = Symbol('GLTFInstance');
+class CachingGLTFLoader {
+    constructor(GLTFInstance) {
+        this[_b$1] = new GLTFLoader();
+        this[$GLTFInstance] = GLTFInstance;
+        this[$loader].setDRACOLoader(dracoLoader);
+    }
+    static setDRACODecoderLocation(url) {
+        dracoDecoderLocation = url;
+        dracoLoader.setDecoderPath(url);
+    }
+    static getDRACODecoderLocation() {
+        return dracoDecoderLocation;
+    }
+    static get cache() {
+        return cache;
+    }
+    static clearCache() {
+        cache.forEach((_value, url) => {
+            this.delete(url);
+        });
+        this[$evictionPolicy].reset();
+    }
+    static has(url) {
+        return cache.has(url);
+    }
+    static async delete(url) {
+        if (!this.has(url)) {
+            return;
+        }
+        const gltfLoads = cache.get(url);
+        preloaded.delete(url);
+        cache.delete(url);
+        const gltf = await gltfLoads;
+        gltf.dispose();
+    }
+    static hasFinishedLoading(url) {
+        return !!preloaded.get(url);
+    }
+    get [(_a$2 = $evictionPolicy, _b$1 = $loader, $evictionPolicy)]() {
+        return this.constructor[$evictionPolicy];
+    }
+    async preload(url, progressCallback = () => { }) {
+        if (!cache.has(url)) {
+            const rawGLTFLoads = loadWithLoader(url, this[$loader], (progress) => {
+                progressCallback(progress * 0.8);
+            });
+            const gltfInstanceLoads = rawGLTFLoads.then((rawGLTF) => {
+                const GLTFInstance = this[$GLTFInstance];
+                const preparedGLTF = GLTFInstance.prepare(rawGLTF);
+                progressCallback(0.9);
+                return new GLTFInstance(preparedGLTF);
+            });
+            cache.set(url, gltfInstanceLoads);
+        }
+        await cache.get(url);
+        if (progressCallback) {
+            progressCallback(1.0);
+        }
+        preloaded.set(url, true);
+    }
+    async load(url, progressCallback = () => { }) {
+        await this.preload(url, progressCallback);
+        const gltf = await cache.get(url);
+        const clone = gltf.clone();
+        this[$evictionPolicy].retain(url);
+        clone.dispose = (() => {
+            const originalDispose = clone.dispose;
+            let disposed = false;
+            return () => {
+                if (disposed) {
+                    return;
+                }
+                disposed = true;
+                originalDispose.apply(clone);
+                this[$evictionPolicy].release(url);
+            };
+        })();
+        return clone;
+    }
+}
+CachingGLTFLoader[_a$2] = new CacheEvictionPolicy(CachingGLTFLoader);
+
+const deserializeUrl = (url) => (url != null && url !== 'null') ? toFullUrl(url) : null;
+const assertIsArCandidate = () => {
+    if (IS_WEBXR_AR_CANDIDATE) {
+        return;
+    }
+    const missingApis = [];
+    if (!HAS_WEBXR_DEVICE_API) {
+        missingApis.push('WebXR Device API');
+    }
+    if (!HAS_WEBXR_HIT_TEST_API) {
+        missingApis.push('WebXR Hit Test API');
+    }
+    throw new Error(`The following APIs are required for AR, but are missing in this browser: ${missingApis.join(', ')}`);
+};
+const toFullUrl = (partialUrl) => {
+    const url = new URL(partialUrl, window.location.toString());
+    return url.toString();
+};
+const throttle = (fn, ms) => {
+    let timer = null;
+    const throttled = (...args) => {
+        if (timer != null) {
+            return;
+        }
+        fn(...args);
+        timer = self.setTimeout(() => timer = null, ms);
+    };
+    throttled.flush = () => {
+        if (timer != null) {
+            self.clearTimeout(timer);
+            timer = null;
+        }
+    };
+    return throttled;
+};
+const debounce = (fn, ms) => {
+    let timer = null;
+    return (...args) => {
+        if (timer != null) {
+            self.clearTimeout(timer);
+        }
+        timer = self.setTimeout(() => {
+            timer = null;
+            fn(...args);
+        }, ms);
+    };
+};
+const clamp = (value, lowerLimit, upperLimit) => Math.max(lowerLimit, Math.min(upperLimit, value));
+const CAPPED_DEVICE_PIXEL_RATIO = 1;
+const resolveDpr = (() => {
+    const HAS_META_VIEWPORT_TAG = (() => {
+        const metas = document.head != null ?
+            Array.from(document.head.querySelectorAll('meta')) :
+            [];
+        for (const meta of metas) {
+            if (meta.name === 'viewport') {
+                return true;
+            }
+        }
+        return false;
+    })();
+    if (!HAS_META_VIEWPORT_TAG) {
+        console.warn('No <meta name="viewport"> detected; <model-viewer> will cap pixel density at 1.');
+    }
+    return () => HAS_META_VIEWPORT_TAG ? window.devicePixelRatio :
+        CAPPED_DEVICE_PIXEL_RATIO;
+})();
+const isDebugMode = (() => {
+    const debugQueryParameterName = 'model-viewer-debug-mode';
+    const debugQueryParameter = new RegExp(`[\?&]${debugQueryParameterName}(&|$)`);
+    return () => (self.ModelViewerElement &&
+        self.ModelViewerElement.debugMode) ||
+        (self.location && self.location.search &&
+            self.location.search.match(debugQueryParameter));
+})();
+const getFirstMapKey = (map) => {
+    if (map.keys != null) {
+        return map.keys().next().value || null;
+    }
+    let firstKey = null;
+    try {
+        map.forEach((_value, key, _map) => {
+            firstKey = key;
+            throw new Error();
+        });
+    }
+    catch (_error) {
+    }
+    return firstKey;
+};
+
 /**
  * @author Emmett Lalish / elalish
  *
@@ -55303,69 +55555,6 @@ void main() {
 	return RoughnessMipmapper;
 
 } )();
-
-var _a$1, _b;
-const $retainerCount = Symbol('retainerCount');
-const $recentlyUsed = Symbol('recentlyUsed');
-const $evict = Symbol('evict');
-const $evictionThreshold = Symbol('evictionThreshold');
-const $cache = Symbol('cache');
-class CacheEvictionPolicy {
-    constructor(cache, evictionThreshold = 5) {
-        this[_a$1] = new Map();
-        this[_b] = [];
-        this[$cache] = cache;
-        this[$evictionThreshold] = evictionThreshold;
-    }
-    set evictionThreshold(value) {
-        this[$evictionThreshold] = value;
-        this[$evict]();
-    }
-    get evictionThreshold() {
-        return this[$evictionThreshold];
-    }
-    get cache() {
-        return this[$cache];
-    }
-    retainerCount(key) {
-        return this[$retainerCount].get(key) || 0;
-    }
-    reset() {
-        this[$retainerCount].clear();
-        this[$recentlyUsed] = [];
-    }
-    retain(key) {
-        if (!this[$retainerCount].has(key)) {
-            this[$retainerCount].set(key, 0);
-        }
-        this[$retainerCount].set(key, this[$retainerCount].get(key) + 1);
-        const recentlyUsedIndex = this[$recentlyUsed].indexOf(key);
-        if (recentlyUsedIndex !== -1) {
-            this[$recentlyUsed].splice(recentlyUsedIndex, 1);
-        }
-        this[$recentlyUsed].unshift(key);
-        this[$evict]();
-    }
-    release(key) {
-        if (this[$retainerCount].has(key)) {
-            this[$retainerCount].set(key, Math.max(this[$retainerCount].get(key) - 1, 0));
-        }
-        this[$evict]();
-    }
-    [(_a$1 = $retainerCount, _b = $recentlyUsed, $evict)]() {
-        if (this[$recentlyUsed].length < this[$evictionThreshold]) {
-            return;
-        }
-        for (let i = this[$recentlyUsed].length - 1; i >= this[$evictionThreshold]; --i) {
-            const key = this[$recentlyUsed][i];
-            const retainerCount = this[$retainerCount].get(key);
-            if (retainerCount === 0) {
-                this[$cache].delete(key);
-                this[$recentlyUsed].splice(i, 1);
-            }
-        }
-    }
-}
 
 /**
  * @author sunag / http://www.sunag.com.br
@@ -55951,175 +56140,79 @@ function parallelTraverse( a, b, callback ) {
 
 }
 
-const alphaChunk =  `
-#ifdef ALPHATEST
-
-    if ( diffuseColor.a < ALPHATEST ) discard;
-    diffuseColor.a = 1.0;
-
-#endif
-`;
-
-const cloneGltf = (gltf) => {
-    const clone = Object.assign(Object.assign({}, gltf), { scene: SkeletonUtils.clone(gltf.scene) });
-    const cloneAndPatchMaterial = (material) => {
-        const clone = material.clone();
-        const oldOnBeforeCompile = material.onBeforeCompile;
-        clone.onBeforeCompile = material.isGLTFSpecularGlossinessMaterial ?
-            (shader) => {
-                oldOnBeforeCompile(shader, undefined);
-                shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', alphaChunk);
-            } :
-            (shader) => {
-                shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', alphaChunk);
-                oldOnBeforeCompile(shader, undefined);
-            };
-        clone.shadowSide = FrontSide;
-        if (clone.transparent) {
-            clone.depthWrite = false;
-        }
-        if (!clone.alphaTest && !clone.transparent) {
-            clone.alphaTest = -0.5;
-        }
-        return clone;
-    };
-    clone.scene.traverse((node) => {
-        node.renderOrder = 1000;
-        if (Array.isArray(node.material)) {
-            node.material = node.material.map(cloneAndPatchMaterial);
-        }
-        else if (node.material != null) {
-            node.material = cloneAndPatchMaterial(node.material);
-        }
-    });
-    return clone;
-};
-const moveChildren = (from, to) => {
-    while (from.children.length) {
-        to.add(from.children.shift());
+const $prepared = Symbol('prepared');
+const $prepare = Symbol('prepare');
+const $preparedGLTF = Symbol('preparedGLTF');
+const $clone = Symbol('clone');
+class GLTFInstance {
+    constructor(preparedGLTF) {
+        this[$preparedGLTF] = preparedGLTF;
     }
-};
-const reduceVertices = (model, func) => {
-    let value = 0;
-    const vector = new Vector3();
-    model.traverse((object) => {
-        let i, l;
-        object.updateWorldMatrix(false, false);
-        let geometry = object.geometry;
-        if (geometry !== undefined) {
-            if (geometry.isGeometry) {
-                let vertices = geometry.vertices;
-                for (i = 0, l = vertices.length; i < l; i++) {
-                    vector.copy(vertices[i]);
-                    vector.applyMatrix4(object.matrixWorld);
-                    value = func(value, vector);
+    static prepare(source) {
+        if (source.scene == null) {
+            throw new Error('Model does not have a scene');
+        }
+        if (source[$prepared]) {
+            return source;
+        }
+        const prepared = this[$prepare](source);
+        prepared[$prepared] = true;
+        return prepared;
+    }
+    static [$prepare](source) {
+        const { scene } = source;
+        const scenes = [scene];
+        return Object.assign(Object.assign({}, source), { scene, scenes });
+    }
+    get parser() {
+        return this[$preparedGLTF].parser;
+    }
+    get animations() {
+        return this[$preparedGLTF].animations;
+    }
+    get scene() {
+        return this[$preparedGLTF].scene;
+    }
+    get scenes() {
+        return this[$preparedGLTF].scenes;
+    }
+    get cameras() {
+        return this[$preparedGLTF].cameras;
+    }
+    get asset() {
+        return this[$preparedGLTF].asset;
+    }
+    get userData() {
+        return this[$preparedGLTF].userData;
+    }
+    clone() {
+        const GLTFInstanceConstructor = this.constructor;
+        const clonedGLTF = this[$clone]();
+        return new GLTFInstanceConstructor(clonedGLTF);
+    }
+    dispose() {
+        this.scenes.forEach((scene) => {
+            scene.traverse((object) => {
+                if (!object.isMesh) {
+                    return;
                 }
-            }
-            else if (geometry.isBufferGeometry) {
-                let attribute = geometry.attributes.position;
-                if (attribute !== undefined) {
-                    for (i = 0, l = attribute.count; i < l; i++) {
-                        vector.fromBufferAttribute(attribute, i)
-                            .applyMatrix4(object.matrixWorld);
-                        value = func(value, vector);
-                    }
-                }
-            }
-        }
-    });
-    return value;
-};
-
-const deserializeUrl = (url) => (url != null && url !== 'null') ? toFullUrl(url) : null;
-const assertIsArCandidate = () => {
-    if (IS_WEBXR_AR_CANDIDATE) {
-        return;
-    }
-    const missingApis = [];
-    if (!HAS_WEBXR_DEVICE_API) {
-        missingApis.push('WebXR Device API');
-    }
-    if (!HAS_WEBXR_HIT_TEST_API) {
-        missingApis.push('WebXR Hit Test API');
-    }
-    throw new Error(`The following APIs are required for AR, but are missing in this browser: ${missingApis.join(', ')}`);
-};
-const toFullUrl = (partialUrl) => {
-    const url = new URL(partialUrl, window.location.toString());
-    return url.toString();
-};
-const throttle = (fn, ms) => {
-    let timer = null;
-    const throttled = (...args) => {
-        if (timer != null) {
-            return;
-        }
-        fn(...args);
-        timer = self.setTimeout(() => timer = null, ms);
-    };
-    throttled.flush = () => {
-        if (timer != null) {
-            self.clearTimeout(timer);
-            timer = null;
-        }
-    };
-    return throttled;
-};
-const debounce = (fn, ms) => {
-    let timer = null;
-    return (...args) => {
-        if (timer != null) {
-            self.clearTimeout(timer);
-        }
-        timer = self.setTimeout(() => {
-            timer = null;
-            fn(...args);
-        }, ms);
-    };
-};
-const clamp = (value, lowerLimit, upperLimit) => Math.max(lowerLimit, Math.min(upperLimit, value));
-const CAPPED_DEVICE_PIXEL_RATIO = 1;
-const resolveDpr = (() => {
-    const HAS_META_VIEWPORT_TAG = (() => {
-        const metas = document.head != null ?
-            Array.from(document.head.querySelectorAll('meta')) :
-            [];
-        for (const meta of metas) {
-            if (meta.name === 'viewport') {
-                return true;
-            }
-        }
-        return false;
-    })();
-    if (!HAS_META_VIEWPORT_TAG) {
-        console.warn('No <meta name="viewport"> detected; <model-viewer> will cap pixel density at 1.');
-    }
-    return () => HAS_META_VIEWPORT_TAG ? window.devicePixelRatio :
-        CAPPED_DEVICE_PIXEL_RATIO;
-})();
-const isDebugMode = (() => {
-    const debugQueryParameterName = 'model-viewer-debug-mode';
-    const debugQueryParameter = new RegExp(`[\?&]${debugQueryParameterName}(&|$)`);
-    return () => (self.ModelViewerElement &&
-        self.ModelViewerElement.debugMode) ||
-        (self.location && self.location.search &&
-            self.location.search.match(debugQueryParameter));
-})();
-const getFirstMapKey = (map) => {
-    if (map.keys != null) {
-        return map.keys().next().value || null;
-    }
-    let firstKey = null;
-    try {
-        map.forEach((_value, key, _map) => {
-            firstKey = key;
-            throw new Error();
+                const mesh = object;
+                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                materials.forEach(material => {
+                    material.dispose();
+                });
+                mesh.geometry.dispose();
+            });
         });
     }
-    catch (_error) {
+    [$clone]() {
+        const source = this[$preparedGLTF];
+        const scene = SkeletonUtils.clone(this.scene);
+        const scenes = [scene];
+        const userData = source.userData ? Object.assign({}, source.userData) : {};
+        return Object.assign(Object.assign({}, source), { scene, scenes, userData });
     }
-    return firstKey;
-};
+}
 
 class Reticle extends Object3D {
     constructor(camera) {
@@ -56211,7 +56304,7 @@ const applyExtensionCompatibility = (gl) => {
     };
 };
 
-var _a$2, _b$1, _c, _d, _e, _f, _g;
+var _a$3, _b$2, _c, _d, _e, _f, _g;
 const $presentedScene = Symbol('presentedScene');
 const $rafId = Symbol('rafId');
 const $currentSession = Symbol('currentSession');
@@ -56233,8 +56326,8 @@ class ARRenderer extends EventDispatcher {
         this.dolly = new Object3D();
         this.reticle = new Reticle(this.camera);
         this.raycaster = null;
-        this[_a$2] = null;
-        this[_b$1] = null;
+        this[_a$3] = null;
+        this[_b$2] = null;
         this[_c] = null;
         this[_d] = null;
         this[_e] = null;
@@ -56314,7 +56407,7 @@ class ARRenderer extends EventDispatcher {
             this[$postSessionCleanup]();
         }
     }
-    [(_a$2 = $outputContext, _b$1 = $rafId, _c = $currentSession, _d = $refSpace, _e = $viewerRefSpace, _f = $presentedScene, _g = $resolveCleanup, $postSessionCleanup)]() {
+    [(_a$3 = $outputContext, _b$2 = $rafId, _c = $currentSession, _d = $refSpace, _e = $viewerRefSpace, _f = $presentedScene, _g = $resolveCleanup, $postSessionCleanup)]() {
         this.threeRenderer.setFramebuffer(null);
         if (this[$presentedScene] != null) {
             this.dolly.remove(this[$presentedScene]);
@@ -57020,7 +57113,7 @@ class EnvironmentScene extends Scene {
     }
 }
 
-var _a$3, _b$2;
+var _a$4, _b$3;
 const GENERATED_SIGMA = 0.04;
 Cache.enabled = true;
 const HDR_FILE_RE = /\.hdr$/;
@@ -57039,8 +57132,8 @@ const userData = {
 class TextureUtils extends EventDispatcher {
     constructor(threeRenderer) {
         super();
-        this[_a$3] = null;
-        this[_b$2] = new Map();
+        this[_a$4] = null;
+        this[_b$3] = new Map();
         this[$PMREMGenerator] = new PMREMGenerator(threeRenderer);
     }
     get pmremGenerator() {
@@ -57107,6 +57200,10 @@ class TextureUtils extends EventDispatcher {
                 environmentMapLoads = this[$loadGeneratedEnvironmentMap]();
             }
             let [environmentMap, skybox] = await Promise.all([environmentMapLoads, skyboxLoads]);
+            if (environmentMap == null) {
+                throw new Error('Failed to load environment map.');
+            }
+            environmentMap = environmentMap;
             this[$addMetadata](environmentMap.texture, environmentMapUrl, 'PMREM');
             if (skybox != null) {
                 this[$addMetadata](skybox.texture, skyboxUrl, 'PMREM');
@@ -57117,7 +57214,10 @@ class TextureUtils extends EventDispatcher {
             updateGenerationProgress(1.0);
         }
     }
-    [(_a$3 = $generatedEnvironmentMap, _b$2 = $environmentMapCache, $addMetadata)](texture, url, mapping) {
+    [(_a$4 = $generatedEnvironmentMap, _b$3 = $environmentMapCache, $addMetadata)](texture, url, mapping) {
+        if (texture == null) {
+            return;
+        }
         texture.userData = Object.assign(Object.assign({}, userData), ({
             url: url,
             mapping: mapping,
@@ -57161,7 +57261,7 @@ class TextureUtils extends EventDispatcher {
     }
 }
 
-var _a$4, _b$3;
+var _a$5, _b$4;
 const $arRenderer = Symbol('arRenderer');
 const $onWebGLContextLost = Symbol('onWebGLContextLost');
 const $webGLContextLostHandler = Symbol('webGLContextLostHandler');
@@ -57173,7 +57273,7 @@ class Renderer extends EventDispatcher {
         this.height = 0;
         this.debugger = null;
         this.scenes = new Set();
-        this[_b$3] = (event) => this[$onWebGLContextLost](event);
+        this[_b$4] = (event) => this[$onWebGLContextLost](event);
         const webGlOptions = { alpha: true, antialias: true };
         if (IS_WEBXR_AR_CANDIDATE) {
             Object.assign(webGlOptions, { alpha: true, preserveDrawingBuffer: true });
@@ -57328,124 +57428,55 @@ class Renderer extends EventDispatcher {
         this.scenes.clear();
         this.canvas3D.removeEventListener('webglcontextlost', this[$webGLContextLostHandler]);
     }
-    [(_a$4 = $singleton, _b$3 = $webGLContextLostHandler, $onWebGLContextLost)](event) {
+    [(_a$5 = $singleton, _b$4 = $webGLContextLostHandler, $onWebGLContextLost)](event) {
         this.dispatchEvent({ type: 'contextlost', sourceEvent: event });
     }
 }
-Renderer[_a$4] = new Renderer({ debug: isDebugMode() });
+Renderer[_a$5] = new Renderer({ debug: isDebugMode() });
 
-var _a$5, _b$4;
-const loadWithLoader = (url, loader, progressCallback = () => { }) => {
-    const onProgress = (event) => {
-        progressCallback(event.loaded / event.total);
-    };
-    return new Promise((resolve, reject) => {
-        loader.load(url, resolve, onProgress, reject);
-    });
-};
-const $releaseFromCache = Symbol('releaseFromCache');
-const cache = new Map();
-const preloaded = new Map();
-const $evictionPolicy = Symbol('evictionPolicy');
-let dracoDecoderLocation;
-const dracoLoader = new DRACOLoader();
-const $loader = Symbol('loader');
-class CachingGLTFLoader {
-    constructor() {
-        this[_b$4] = new GLTFLoader();
-        this.roughnessMipmapper = new RoughnessMipmapper(Renderer.singleton.threeRenderer);
-        this[$loader].setDRACOLoader(dracoLoader);
-    }
-    static setDRACODecoderLocation(url) {
-        dracoDecoderLocation = url;
-        dracoLoader.setDecoderPath(url);
-    }
-    static getDRACODecoderLocation() {
-        return dracoDecoderLocation;
-    }
-    static get cache() {
-        return cache;
-    }
-    static clearCache() {
-        cache.forEach((_value, url) => {
-            this.delete(url);
-        });
-        this[$evictionPolicy].reset();
-    }
-    static has(url) {
-        return cache.has(url);
-    }
-    static async delete(url) {
-        if (!this.has(url)) {
-            return;
-        }
-        const gltfLoads = cache.get(url);
-        preloaded.delete(url);
-        cache.delete(url);
-        const gltf = await gltfLoads;
-        gltf.scenes.forEach(scene => {
-            scene.traverse(object3D => {
-                if (!object3D.isMesh) {
-                    return;
-                }
-                const mesh = object3D;
-                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                materials.forEach(material => {
-                    material.dispose();
-                });
-                mesh.geometry.dispose();
-            });
-        });
-    }
-    static hasFinishedLoading(url) {
-        return !!preloaded.get(url);
-    }
-    get [(_a$5 = $evictionPolicy, _b$4 = $loader, $evictionPolicy)]() {
-        return this.constructor[$evictionPolicy];
-    }
-    async preload(url, progressCallback = () => { }) {
-        if (!cache.has(url)) {
-            cache.set(url, loadWithLoader(url, this[$loader], (progress) => {
-                progressCallback(progress * 0.9);
-            }));
-        }
-        await cache.get(url);
-        if (progressCallback) {
-            progressCallback(1.0);
-        }
-        preloaded.set(url, true);
-    }
-    async load(url, progressCallback = () => { }) {
-        await this.preload(url, progressCallback);
-        const gltf = await cache.get(url);
+const alphaChunk =  `
+#ifdef ALPHATEST
+
+    if ( diffuseColor.a < ALPHATEST ) discard;
+    diffuseColor.a = 1.0;
+
+#endif
+`;
+
+var _a$6;
+const $roughnessMipmapper = Symbol('roughnessMipmapper');
+const $cloneAndPatchMaterial = Symbol('cloneAndPatchMaterial');
+class ModelViewerGLTFInstance extends GLTFInstance {
+    static [(_a$6 = $roughnessMipmapper, $prepare)](source) {
+        const prepared = super[$prepare](source);
+        const { scene } = prepared;
         const meshesToDuplicate = [];
-        if (gltf.scene != null) {
-            gltf.scene.traverse((node) => {
-                node.frustumCulled = false;
-                if (!node.name) {
-                    node.name = node.uuid;
-                }
-                if (!node.isMesh) {
-                    return;
-                }
-                node.castShadow = true;
-                const mesh = node;
-                let transparent = false;
-                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                materials.forEach(material => {
-                    if (material.isMeshStandardMaterial) {
-                        if (material.transparent && material.side === DoubleSide) {
-                            transparent = true;
-                            material.side = FrontSide;
-                        }
-                        this.roughnessMipmapper.generateMipmaps(material);
+        scene.traverse((node) => {
+            node.renderOrder = 1000;
+            node.frustumCulled = false;
+            if (!node.name) {
+                node.name = node.uuid;
+            }
+            if (!node.isMesh) {
+                return;
+            }
+            node.castShadow = true;
+            const mesh = node;
+            let transparent = false;
+            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            materials.forEach(material => {
+                if (material.isMeshStandardMaterial) {
+                    if (material.transparent && material.side === DoubleSide) {
+                        transparent = true;
+                        material.side = FrontSide;
                     }
-                });
-                if (transparent) {
-                    meshesToDuplicate.push(mesh);
+                    this[$roughnessMipmapper].generateMipmaps(material);
                 }
             });
-        }
+            if (transparent) {
+                meshesToDuplicate.push(mesh);
+            }
+        });
         for (const mesh of meshesToDuplicate) {
             const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
             const duplicateMaterials = materials.map((material) => {
@@ -57460,47 +57491,98 @@ class CachingGLTFLoader {
             meshBack.renderOrder = -1;
             mesh.add(meshBack);
         }
-        const clone = cloneGltf(gltf);
-        const model = clone.scene ? clone.scene : null;
-        if (model != null) {
-            model.userData.animations = clone.animations;
-            this[$evictionPolicy].retain(url);
-            model[$releaseFromCache] = (() => {
-                let released = false;
-                return () => {
-                    if (released) {
-                        return;
-                    }
-                    model.traverse((object3D) => {
-                        if (!object3D.isMesh) {
-                            return;
-                        }
-                        const mesh = object3D;
-                        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                        materials.forEach(material => {
-                            material.dispose();
-                        });
-                    });
-                    this[$evictionPolicy].release(url);
-                    released = true;
-                };
-            })();
+        return prepared;
+    }
+    [$clone]() {
+        const clone = super[$clone]();
+        const sourceUUIDToClonedMaterial = new Map();
+        clone.scene.traverse((node) => {
+            if (node.isMesh) {
+                const mesh = node;
+                if (Array.isArray(mesh.material)) {
+                    mesh.material = mesh.material.map((material) => this[$cloneAndPatchMaterial](material, sourceUUIDToClonedMaterial));
+                }
+                else if (mesh.material != null) {
+                    mesh.material = this[$cloneAndPatchMaterial](mesh.material, sourceUUIDToClonedMaterial);
+                }
+            }
+        });
+        return clone;
+    }
+    [$cloneAndPatchMaterial](material, sourceUUIDToClonedMaterial) {
+        if (sourceUUIDToClonedMaterial.has(material.uuid)) {
+            return sourceUUIDToClonedMaterial.get(material.uuid);
         }
-        return model;
+        const clone = material.clone();
+        const oldOnBeforeCompile = material.onBeforeCompile;
+        clone.onBeforeCompile = material.isGLTFSpecularGlossinessMaterial ?
+            (shader) => {
+                oldOnBeforeCompile(shader, undefined);
+                shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', alphaChunk);
+            } :
+            (shader) => {
+                shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', alphaChunk);
+                oldOnBeforeCompile(shader, undefined);
+            };
+        clone.shadowSide = FrontSide;
+        if (clone.transparent) {
+            clone.depthWrite = false;
+        }
+        if (!clone.alphaTest && !clone.transparent) {
+            clone.alphaTest = -0.5;
+        }
+        sourceUUIDToClonedMaterial.set(material.uuid, clone);
+        return clone;
     }
 }
-CachingGLTFLoader[_a$5] = new CacheEvictionPolicy(CachingGLTFLoader);
+ModelViewerGLTFInstance[_a$6] = new RoughnessMipmapper(Renderer.singleton.threeRenderer);
 
-var _a$6, _b$5;
+const moveChildren = (from, to) => {
+    while (from.children.length) {
+        to.add(from.children.shift());
+    }
+};
+const reduceVertices = (model, func) => {
+    let value = 0;
+    const vector = new Vector3();
+    model.traverse((object) => {
+        let i, l;
+        object.updateWorldMatrix(false, false);
+        let geometry = object.geometry;
+        if (geometry !== undefined) {
+            if (geometry.isGeometry) {
+                let vertices = geometry.vertices;
+                for (i = 0, l = vertices.length; i < l; i++) {
+                    vector.copy(vertices[i]);
+                    vector.applyMatrix4(object.matrixWorld);
+                    value = func(value, vector);
+                }
+            }
+            else if (geometry.isBufferGeometry) {
+                let attribute = geometry.attributes.position;
+                if (attribute !== undefined) {
+                    for (i = 0, l = attribute.count; i < l; i++) {
+                        vector.fromBufferAttribute(attribute, i)
+                            .applyMatrix4(object.matrixWorld);
+                        value = func(value, vector);
+                    }
+                }
+            }
+        }
+    });
+    return value;
+};
+
+var _a$7, _b$5;
 const $cancelPendingSourceChange = Symbol('cancelPendingSourceChange');
-const $currentScene = Symbol('currentScene');
+const $currentGLTF = Symbol('currentGLTF');
 const DEFAULT_FOV_DEG = 45;
 const $loader$1 = Symbol('loader');
 class Model extends Object3D {
     constructor() {
         super();
-        this[_a$6] = null;
-        this[_b$5] = new CachingGLTFLoader();
+        this[_a$7] = null;
+        this[_b$5] = new CachingGLTFLoader(ModelViewerGLTFInstance);
         this.animations = [];
         this.animationsByName = new Map();
         this.currentAnimationAction = null;
@@ -57541,9 +57623,9 @@ class Model extends Object3D {
             this[$cancelPendingSourceChange] = null;
         }
         this.url = url;
-        let scene = null;
+        let gltf;
         try {
-            scene = await new Promise(async (resolve, reject) => {
+            gltf = await new Promise(async (resolve, reject) => {
                 this[$cancelPendingSourceChange] = () => reject();
                 try {
                     const result = await this.loader.load(url, progressCallback);
@@ -57561,16 +57643,11 @@ class Model extends Object3D {
             throw error;
         }
         this.clear();
-        this[$currentScene] = scene;
-        if (scene != null) {
-            moveChildren(scene, this.modelContainer);
+        this[$currentGLTF] = gltf;
+        if (gltf != null) {
+            moveChildren(gltf.scene, this.modelContainer);
         }
-        this.modelContainer.traverse(obj => {
-            if (obj && obj.type === 'Mesh') {
-                obj.castShadow = true;
-            }
-        });
-        const animations = scene ? scene.userData.animations : [];
+        const { animations } = gltf;
         const animationsByName = new Map();
         const animationNames = [];
         for (const animation of animations) {
@@ -57639,10 +57716,11 @@ class Model extends Object3D {
     clear() {
         this.url = null;
         this.userData = { url: null };
-        if (this[$currentScene] != null) {
-            moveChildren(this.modelContainer, this[$currentScene]);
-            this[$currentScene][$releaseFromCache]();
-            this[$currentScene] = null;
+        const gltf = this[$currentGLTF];
+        if (gltf != null) {
+            moveChildren(this.modelContainer, gltf.scene);
+            gltf.dispose();
+            this[$currentGLTF] = null;
         }
         if (this.currentAnimationAction != null) {
             this.currentAnimationAction.stop();
@@ -57675,7 +57753,7 @@ class Model extends Object3D {
         this.add(this.modelContainer);
     }
 }
-_a$6 = $currentScene, _b$5 = $loader$1;
+_a$7 = $currentGLTF, _b$5 = $loader$1;
 
 const OFFSET = 0.001;
 const BASE_OPACITY = 0.1;
@@ -57774,13 +57852,13 @@ class Shadow extends DirectionalLight {
     }
 }
 
-var _a$7;
+var _a$8;
 const DEFAULT_TAN_FOV = Math.tan((DEFAULT_FOV_DEG / 2) * Math.PI / 180);
 const $paused = Symbol('paused');
 class ModelScene extends Scene {
     constructor({ canvas, element, width, height }) {
         super();
-        this[_a$7] = false;
+        this[_a$8] = false;
         this.aspect = 1;
         this.shadow = null;
         this.shadowIntensity = 0;
@@ -57879,13 +57957,16 @@ class ModelScene extends Scene {
         this.dispatchEvent({ type: 'model-load', url: event.url });
     }
     setShadowIntensity(shadowIntensity) {
+        shadowIntensity = Math.max(shadowIntensity, 0);
         this.shadowIntensity = shadowIntensity;
-        if (shadowIntensity > 0 && this.model.hasModel()) {
-            if (this.shadow == null) {
+        if (this.model.hasModel()) {
+            if (this.shadow == null && shadowIntensity > 0) {
                 this.shadow = new Shadow(this.model, this.pivot, this.shadowSoftness);
                 this.pivot.add(this.shadow);
             }
-            this.shadow.setIntensity(shadowIntensity);
+            if (this.shadow != null) {
+                this.shadow.setIntensity(shadowIntensity);
+            }
         }
     }
     setShadowSoftness(softness) {
@@ -57895,7 +57976,7 @@ class ModelScene extends Scene {
         }
     }
 }
-_a$7 = $paused;
+_a$8 = $paused;
 
 const dataUrlToBlob = async (base64DataUrl) => {
     return new Promise((resolve, reject) => {
@@ -57921,14 +58002,14 @@ const dataUrlToBlob = async (base64DataUrl) => {
     });
 };
 
-var _a$8, _b$6;
+var _a$9, _b$6;
 const $ongoingActivities = Symbol('ongoingActivities');
 const $announceTotalProgress = Symbol('announceTotalProgress');
 const $eventDelegate = Symbol('eventDelegate');
 const ACTIVITY_PROGRESS_WEIGHT = 0.5;
 class ProgressTracker {
     constructor() {
-        this[_a$8] = document.createDocumentFragment();
+        this[_a$9] = document.createDocumentFragment();
         this.addEventListener = (...args) => this[$eventDelegate].addEventListener(...args);
         this.removeEventListener = (...args) => this[$eventDelegate].removeEventListener(...args);
         this.dispatchEvent = (...args) => this[$eventDelegate].dispatchEvent(...args);
@@ -57953,7 +58034,7 @@ class ProgressTracker {
             return activity.progress;
         };
     }
-    [(_a$8 = $eventDelegate, _b$6 = $ongoingActivities, $announceTotalProgress)]() {
+    [(_a$9 = $eventDelegate, _b$6 = $ongoingActivities, $announceTotalProgress)]() {
         let totalProgress = 0;
         let statusCount = 0;
         let completedActivities = 0;
@@ -57979,7 +58060,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var _a$9, _b$7, _c$1, _d$1, _e$1, _f$1, _g$1, _h, _j, _k;
+var _a$a, _b$7, _c$1, _d$1, _e$1, _f$1, _g$1, _h, _j, _k;
 const CLEAR_MODEL_TIMEOUT_MS = 1000;
 const FALLBACK_SIZE_UPDATE_THRESHOLD_MS = 50;
 const UNSIZED_MEDIA_WIDTH = 300;
@@ -58026,7 +58107,7 @@ class ModelViewerElementBase extends UpdatingElement {
         super();
         this.alt = null;
         this.src = null;
-        this[_a$9] = false;
+        this[_a$a] = false;
         this[_b$7] = false;
         this[_c$1] = 0;
         this[_d$1] = resolveDpr();
@@ -58125,7 +58206,7 @@ class ModelViewerElementBase extends UpdatingElement {
     get loaded() {
         return this[$getLoaded]();
     }
-    get [(_a$9 = $isInRenderTree, _b$7 = $loaded, _c$1 = $loadedTime, _d$1 = $lastDpr, _e$1 = $clearModelTimeout, _f$1 = $fallbackResizeHandler, _g$1 = $resizeObserver, _h = $intersectionObserver, _j = $progressTracker, _k = $contextLostHandler, $renderer)]() {
+    get [(_a$a = $isInRenderTree, _b$7 = $loaded, _c$1 = $loadedTime, _d$1 = $lastDpr, _e$1 = $clearModelTimeout, _f$1 = $fallbackResizeHandler, _g$1 = $resizeObserver, _h = $intersectionObserver, _j = $progressTracker, _k = $contextLostHandler, $renderer)]() {
         return Renderer.singleton;
     }
     get modelIsVisible() {
@@ -58813,7 +58894,7 @@ const normalizeUnit = (() => {
     };
 })();
 
-var _a$a, _b$8, _c$2, _d$2;
+var _a$b, _b$8, _c$2, _d$2;
 const $slot = Symbol('slot');
 const $referenceCount = Symbol('referenceCount');
 const $updateVisibility = Symbol('updateVisibility');
@@ -58824,7 +58905,7 @@ class Hotspot extends CSS2DObject {
     constructor(config) {
         super(document.createElement('div'));
         this.normal = new Vector3(0, 1, 0);
-        this[_a$a] = false;
+        this[_a$b] = false;
         this[_b$8] = 1;
         this[_c$2] = document.createElement('slot');
         this[_d$2] = () => this[$onSlotchange]();
@@ -58876,7 +58957,7 @@ class Hotspot extends CSS2DObject {
             this.normal.setComponent(i, normalizeUnit(normalNodes[i]).number);
         }
     }
-    [(_a$a = $visible, _b$8 = $referenceCount, _c$2 = $slot, _d$2 = $slotchangeHandler, $updateVisibility)]({ notify }) {
+    [(_a$b = $visible, _b$8 = $referenceCount, _c$2 = $slot, _d$2 = $slotchangeHandler, $updateVisibility)]({ notify }) {
         if (this[$visible]) {
             this.element.classList.remove('hide');
         }
@@ -59323,12 +59404,12 @@ configuration or device capabilities');
     return ARModelViewerElement;
 };
 
-var _a$b, _b$9, _c$3;
+var _a$c, _b$9, _c$3;
 const $evaluate = Symbol('evaluate');
 const $lastValue = Symbol('lastValue');
 class Evaluator {
     constructor() {
-        this[_a$b] = null;
+        this[_a$c] = null;
     }
     static evaluatableFor(node, basis = ZERO) {
         if (node instanceof Evaluator) {
@@ -59395,7 +59476,7 @@ class Evaluator {
         return this[$lastValue];
     }
 }
-_a$b = $lastValue;
+_a$c = $lastValue;
 const $percentage = Symbol('percentage');
 const $basis = Symbol('basis');
 class PercentageEvaluator extends Evaluator {
@@ -59566,7 +59647,7 @@ class StyleEvaluator extends Evaluator {
     }
 }
 
-var _a$c, _b$a, _c$4, _d$3;
+var _a$d, _b$a, _c$4, _d$3;
 const $instances = Symbol('instances');
 const $activateListener = Symbol('activateListener');
 const $deactivateListener = Symbol('deactivateListener');
@@ -59582,7 +59663,7 @@ class ScrollObserver {
             instance[$notify]();
         }
     }
-    static [(_a$c = $instances, $activateListener)]() {
+    static [(_a$d = $instances, $activateListener)]() {
         window.addEventListener('scroll', this[$notifyInstances], { passive: true });
     }
     static [$deactivateListener]() {
@@ -59605,7 +59686,7 @@ class ScrollObserver {
     }
     ;
 }
-ScrollObserver[_a$c] = new Set();
+ScrollObserver[_a$d] = new Set();
 const $computeStyleCallback = Symbol('computeStyleCallback');
 const $astWalker = Symbol('astWalker');
 const $dependencies = Symbol('dependencies');
@@ -59726,7 +59807,7 @@ const style = (config) => {
     };
 };
 
-var _a$d, _b$b, _c$5, _d$4, _e$2, _f$2, _g$2, _h$1, _j$1, _k$1, _l, _m, _o, _p, _q, _r, _s;
+var _a$e, _b$b, _c$5, _d$4, _e$2, _f$2, _g$2, _h$1, _j$1, _k$1, _l, _m, _o, _p, _q, _r, _s;
 const DEFAULT_OPTIONS = Object.freeze({
     minimumRadius: 0,
     maximumRadius: Infinity,
@@ -59803,7 +59884,7 @@ const ChangeSource = {
 };
 class Damper {
     constructor() {
-        this[_a$d] = 0;
+        this[_a$e] = 0;
     }
     update(x, xGoal, timeStepMilliseconds, xNormalization) {
         if (x == null) {
@@ -59832,7 +59913,7 @@ class Damper {
         }
     }
 }
-_a$d = $velocity;
+_a$e = $velocity;
 class SmoothControls extends EventDispatcher {
     constructor(camera, element) {
         super();
@@ -60825,7 +60906,7 @@ const EnvironmentMixin = (ModelViewerElement) => {
     return EnvironmentModelViewerElement;
 };
 
-var _a$e, _b$c;
+var _a$f, _b$c;
 const INITIAL_STATUS_ANNOUNCEMENT = 'This page includes one or more 3D models that are loading';
 const FINISHED_LOADING_ANNOUNCEMENT = 'All 3D models in the page have loaded';
 const UPDATE_STATUS_DEBOUNCE_MS = 100;
@@ -60834,7 +60915,7 @@ const $updateStatus = Symbol('updateStatus');
 class LoadingStatusAnnouncer extends EventDispatcher {
     constructor() {
         super();
-        this[_a$e] = null;
+        this[_a$f] = null;
         this.registeredInstanceStatuses = new Map();
         this.loadingPromises = [];
         this.statusElement = document.createElement('p');
@@ -60922,7 +61003,7 @@ class LoadingStatusAnnouncer extends EventDispatcher {
         this.dispatchEvent({ type: 'finished-loading-announced' });
     }
 }
-_a$e = $modelViewerStatusInstance, _b$c = $updateStatus;
+_a$f = $modelViewerStatusInstance, _b$c = $updateStatus;
 
 var __decorate$5 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -60943,7 +61024,7 @@ const RevealStrategy = {
 const PosterDismissalSource = {
     INTERACTION: 'interaction'
 };
-const loader = new CachingGLTFLoader();
+const loader = new CachingGLTFLoader(ModelViewerGLTFInstance);
 const loadingStatusAnnouncer = new LoadingStatusAnnouncer();
 const $defaultProgressBarElement = Symbol('defaultProgressBarElement');
 const $defaultProgressMaskElement = Symbol('defaultProgressMaskElement');
@@ -61424,6 +61505,13 @@ function defineMaterial(ThreeDOMElement) {
          */
         get pbrMetallicRoughness() {
             return this[$pbrMetallicRoughness];
+        }
+        /**
+         * The name of the material. Note that names are optional and not
+         * guaranteed to be unique.
+         */
+        get name() {
+            return this[$name];
         }
     }
     return Material;
@@ -62104,7 +62192,7 @@ const generateInitializer = () => initialize.toString();
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _a$f, _b$d;
+var _a$g, _b$d;
 const $modelGraft = Symbol('modelGraft');
 const $port = Symbol('port');
 const $messageEventHandler = Symbol('messageEventHandler');
@@ -62117,7 +62205,7 @@ const $onMessageEvent = Symbol('onMessageEvent');
  */
 class ModelGraftManipulator {
     constructor(modelGraft, port) {
-        this[_a$f] = (event) => this[$onMessageEvent](event);
+        this[_a$g] = (event) => this[$onMessageEvent](event);
         this[$modelGraft] = modelGraft;
         this[$port] = port;
         this[$port].addEventListener('message', this[$messageEventHandler]);
@@ -62131,7 +62219,7 @@ class ModelGraftManipulator {
         this[$port].removeEventListener('message', this[$messageEventHandler]);
         this[$port].close();
     }
-    [(_a$f = $messageEventHandler, $onMessageEvent)](event) {
+    [(_a$g = $messageEventHandler, $onMessageEvent)](event) {
         const { data } = event;
         if (data && data.type) {
             if (data.type === ThreeDOMMessageType.MUTATE) {
@@ -62241,8 +62329,15 @@ class ThreeDOMExecutionContext extends EventTarget {
      * Workers, so for now all scripts must be valid non-module scripts.
      */
     async eval(scriptSource) {
+        await this.import(URL.createObjectURL(new Blob([scriptSource], { type: 'text/javascript' })));
+    } /* end eval marker (do not remove) */
+    /**
+     * Load a script by URL in the scene graph execution context. Generally works
+     * the same as eval, but is generally safer because it allows you full control
+     * of the script text. Like eval, does not support module scripts.
+     */
+    async import(url) {
         const port = await this[$workerInitializes];
-        const url = URL.createObjectURL(new Blob([scriptSource], { type: 'text/javascript' }));
         port.postMessage({ type: ThreeDOMMessageType.IMPORT_SCRIPT, url });
     }
     /**
@@ -62300,7 +62395,7 @@ const getLocallyUniqueId = (() => {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _a$g;
+var _a$h;
 const $relatedObject = Symbol('relatedObject');
 const $graft = Symbol('graft');
 const $id = Symbol('id');
@@ -62312,7 +62407,7 @@ const $id = Symbol('id');
  */
 class ThreeDOMElement {
     constructor(graft, relatedObject) {
-        this[_a$g] = getLocallyUniqueId();
+        this[_a$h] = getLocallyUniqueId();
         this[$relatedObject] = relatedObject;
         this[$graft] = graft;
         graft.adopt(this);
@@ -62339,11 +62434,14 @@ class ThreeDOMElement {
      */
     get name() {
         const relatedObject = this[$relatedObject];
-        if (relatedObject.isObject3D ||
-            relatedObject.isMaterial) {
-            return relatedObject.userData ?
-                relatedObject.userData.name :
-                null;
+        // NOTE: Some Three.js object names are modified from the names found in the
+        // glTF. Special casing is handled here, but might be better moved to
+        // subclasses down the road:
+        if (relatedObject.isMaterial) {
+            // Material names can be safely referenced directly from the Three.js
+            // object.
+            // @see: https://github.com/mrdoob/three.js/blob/790811db742ea9d7c54fe28f83865d7576f14134/examples/js/loaders/GLTFLoader.js#L2162
+            return relatedObject.name;
         }
         return null;
     }
@@ -62362,7 +62460,7 @@ class ThreeDOMElement {
         return serialized;
     }
 }
-_a$g = $id;
+_a$h = $id;
 
 /* @license
  * Copyright 2020 Google LLC. All Rights Reserved.
@@ -62380,8 +62478,7 @@ _a$g = $id;
  */
 const $threeMaterial = Symbol('threeMaterial');
 /**
- * GraftPBRMetallicRoughness
- * @see https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughness
+ * PBR material properties facade implementation for Three.js materials
  */
 class PBRMetallicRoughness extends ThreeDOMElement {
     get [$threeMaterial]() {
@@ -62426,8 +62523,7 @@ class PBRMetallicRoughness extends ThreeDOMElement {
  */
 const $pbrMetallicRoughness = Symbol('pbrMetallicRoughness');
 /**
- * GraftMaterial
- * @see https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#material
+ * Material facade implementation for Three.js materials
  */
 class Material$1 extends ThreeDOMElement {
     constructor(graft, material) {
@@ -62458,9 +62554,8 @@ class Material$1 extends ThreeDOMElement {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _a$h, _b$e;
+var _a$i, _b$e;
 const $modelUri = Symbol('modelUri');
-const $gltf = Symbol('gltf');
 const $materials = Symbol('materials');
 /**
  * A Model facades the top-level GLTF object returned by Three.js' GLTFLoader.
@@ -62470,10 +62565,9 @@ const $materials = Symbol('materials');
 class Model$1 extends ThreeDOMElement {
     constructor(graft, modelUri, gltf) {
         super(graft, gltf);
-        this[_a$h] = '';
+        this[_a$i] = '';
         this[_b$e] = [];
         this[$modelUri] = modelUri;
-        this[$gltf] = gltf;
         const visitedMaterials = new Set();
         gltf.scene.traverse((object3D) => {
             const maybeMesh = object3D;
@@ -62498,6 +62592,7 @@ class Model$1 extends ThreeDOMElement {
      * of the scene graph.
      *
      * TODO(#1003): How do we handle non-active scenes?
+     * TODO(#1002): Desctibe and enforce traversal order
      */
     get materials() {
         return this[$materials];
@@ -62510,7 +62605,7 @@ class Model$1 extends ThreeDOMElement {
         return serialized;
     }
 }
-_a$h = $modelUri, _b$e = $materials;
+_a$i = $modelUri, _b$e = $materials;
 
 /* @license
  * Copyright 2020 Google LLC. All Rights Reserved.
@@ -62526,7 +62621,7 @@ _a$h = $modelUri, _b$e = $materials;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _a$i;
+var _a$j;
 const $model = Symbol('model');
 const $elementsByInternalId = Symbol('elementsByInternalId');
 /**
@@ -62564,7 +62659,7 @@ const $elementsByInternalId = Symbol('elementsByInternalId');
 class ModelGraft extends EventTarget {
     constructor(modelUri, gltf) {
         super();
-        this[_a$i] = new Map();
+        this[_a$j] = new Map();
         this[$model] = new Model$1(this, modelUri, gltf);
     }
     get model() {
@@ -62580,7 +62675,7 @@ class ModelGraft extends EventTarget {
     adopt(element) {
         this[$elementsByInternalId].set(element.internalID, element);
     }
-    mutate(id, property, value) {
+    async mutate(id, property, value) {
         // TODO(#1005): Manipulations probably need to be validated against
         // allowed capabilities here. We already do this on the scene graph
         // execution context side, but it would be safer to do it on both sides
@@ -62591,7 +62686,7 @@ class ModelGraft extends EventTarget {
         }
     }
 }
-_a$i = $elementsByInternalId;
+_a$j = $elementsByInternalId;
 
 var __decorate$7 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -62611,6 +62706,7 @@ const $updateExecutionContextModel = Symbol('updateExecutionContextModel');
 const $modelGraft$1 = Symbol('modelGraft');
 const $onModelGraftMutation = Symbol('onModelGraftMutation');
 const $modelGraftMutationHandler = Symbol('modelGraftMutationHandler');
+const $isValid3DOMScript = Symbol('isValid3DOMScript');
 const SceneGraphMixin = (ModelViewerElement) => {
     var _a, _b, _c, _d;
     var _e;
@@ -62631,15 +62727,16 @@ const SceneGraphMixin = (ModelViewerElement) => {
             super.connectedCallback();
             this[$mutationObserver].observe(this, { childList: true });
             const script = this.querySelector(`script[type="${SCENE_GRAPH_SCRIPT_TYPE}"]:last-of-type`);
-            if (script != null && script.textContent) {
+            if (script != null && this[$isValid3DOMScript](script)) {
                 this[$onScriptElementAdded](script);
             }
         }
-        disconnectedCallback() {
+        async disconnectedCallback() {
             super.disconnectedCallback();
             this[$mutationObserver].disconnect();
-            if (this[$executionContext] != null) {
-                this[$executionContext].terminate();
+            const executionContext = this[$executionContext];
+            if (executionContext != null) {
+                await executionContext.terminate();
                 this[$executionContext] = null;
             }
         }
@@ -62660,6 +62757,11 @@ const SceneGraphMixin = (ModelViewerElement) => {
             super[$onModelLoad](event);
             this[$updateExecutionContextModel]();
         }
+        [$isValid3DOMScript](node) {
+            return node instanceof HTMLScriptElement &&
+                (node.textContent || node.src) &&
+                node.getAttribute('type') === SCENE_GRAPH_SCRIPT_TYPE;
+        }
         [$onChildListMutation](records) {
             if (this.parentNode == null) {
                 return;
@@ -62667,8 +62769,7 @@ const SceneGraphMixin = (ModelViewerElement) => {
             let lastScriptElement = null;
             for (const record of records) {
                 for (const node of Array.from(record.addedNodes)) {
-                    if (node instanceof HTMLScriptElement && node.textContent &&
-                        node.getAttribute('type') === SCENE_GRAPH_SCRIPT_TYPE) {
+                    if (this[$isValid3DOMScript](node)) {
                         lastScriptElement = node;
                     }
                 }
@@ -62678,24 +62779,34 @@ const SceneGraphMixin = (ModelViewerElement) => {
             }
         }
         [$onScriptElementAdded](script) {
-            if (!script.textContent ||
-                script.getAttribute('type') !== SCENE_GRAPH_SCRIPT_TYPE) {
+            if (!this[$isValid3DOMScript](script)) {
                 return;
             }
             const allowString = script.getAttribute('allow') || '';
             const allowList = allowString.split(';')
                 .map((fragment) => fragment.trim())
                 .filter((capability) => VALID_CAPABILITIES.has(capability));
-            this[$createExecutionContext](script.textContent, allowList);
-        }
-        [$createExecutionContext](scriptSource, capabilities) {
-            const executionContext = this[$executionContext];
-            if (executionContext != null) {
-                executionContext.terminate();
+            if (script.src) {
+                this[$createExecutionContext](script.src, allowList);
             }
-            this[$executionContext] = new ThreeDOMExecutionContext(capabilities);
-            this[$executionContext].eval(scriptSource);
+            else {
+                this[$createExecutionContext](script.textContent, allowList, { eval: true });
+            }
+        }
+        async [$createExecutionContext](scriptSource, capabilities, options = { eval: false }) {
+            let executionContext = this[$executionContext];
+            if (executionContext != null) {
+                await executionContext.terminate();
+            }
+            this[$executionContext] = executionContext =
+                new ThreeDOMExecutionContext(capabilities);
             this.dispatchEvent(new CustomEvent('worklet-created', { detail: { worklet: this.worklet } }));
+            if (options.eval) {
+                await executionContext.eval(scriptSource);
+            }
+            else {
+                await executionContext.import(scriptSource);
+            }
             this[$updateExecutionContextModel]();
         }
         [$updateExecutionContextModel]() {
