@@ -3,7 +3,8 @@ extends ../_layouts/base
 block config
     //- Correct base url pathing for this page
     - var baseUrl = '../'
-    - var isUsingMarkers = true
+    - var isARJS = true
+    - var isMarkers = true
 
 block content
     a-scene(embedded='', arjs='debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;')

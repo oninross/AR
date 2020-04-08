@@ -25,17 +25,16 @@
     <link rel="icon" type="image/png" sizes="96x96" href="../assets/ar/images/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/ar/images/favicon/favicon-16x16.png">
     <script src="../assets/ar/js/vendor/aframe/aframe-v1.0.4.min.js"></script>
-    <script src="../assets/ar/js/vendor/aframe/aframe-ar.min.js"></script>
-    <script>ARjs.Context.baseURL = '../assets/ar/js/vendor/three.js/'</script>
-    <script src="../assets/ar/js/vendor/aframe/aframe-extras.loaders.min.js"></script>
-    <script src="../assets/ar/js/main.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-look-at-component.min.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-ar-nft.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
   <body style="margin: 0px; overflow: hidden;"><a href="#main" class="skip-link">Skip to content</a>
     <a-scene vr-mode-ui="enabled: false" embedded="" arjs="sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;">
-      <a-sphere color="red" radius="2" gps-entity-place="latitude: -35.271895427615554; longitude: 149.1332068214569"></a-sphere>
-      <a-sphere color="green" radius="2" gps-entity-place="latitude: -35.272809997524085; longitude: 149.1326395265863"></a-sphere>
-      <a-sphere color="green" radius="2" gps-entity-place="latitude: -35.2730827; longitude: 149.1331155"></a-sphere>
+      <a-image height="5" gps-entity-place="latitude: -35.1948461; longitude: 149.1156572" look-at="[gps-camera]" src="/assets/ar/images/marker.png" width="3"></a-image>
+      <a-image height="5" gps-entity-place="latitude: -35.197245; longitude: 149.117464" look-at="[gps-camera]" src="/assets/ar/images/marker.png" width="3"></a-image>
+      <a-image height="5" gps-entity-place="latitude: -35.196145; longitude: 149.115977" look-at="[gps-camera]" src="/assets/ar/images/marker.png" width="3"></a-image>
+      <a-image height="5" gps-entity-place="latitude: -35.197325; longitude: 149.115671" look-at="[gps-camera]" src="/assets/ar/images/marker.png" width="3"></a-image>
       <a-camera gps-camera="" rotation-reader=""></a-camera>
     </a-scene>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
