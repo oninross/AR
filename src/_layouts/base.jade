@@ -5,7 +5,7 @@ block config
   - var baseUrl = config.baseUrl || './'
   - var isMarkerless = config.isMarkerless || './'
   - var isARJS = config.isARJS || './'
-  - var isMarkers = config.isMarkers || './'
+  - var isOldARjs = config.isOldARjs || './'
 
 doctype html
 html.no-js(lang='en')
@@ -39,11 +39,11 @@ html.no-js(lang='en')
     link(rel='icon' type='image/png' sizes='96x96', href= baseUrl + 'assets/ar/images/favicon/favicon-96x96.png')
     link(rel='icon' type='image/png' sizes='16x16', href= baseUrl + 'assets/ar/images/favicon/favicon-16x16.png')
 
-    if isARGeo
+    if isNewARjs
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v1.0.4.min.js')
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-look-at-component.min.js')
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-ar-nft.js')
-    else if isMarkers
+    else if isOldARjs
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v0.8.0.min.js')
 
     if isARJS
