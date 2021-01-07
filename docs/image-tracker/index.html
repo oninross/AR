@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>AR Firestarter</title>
+    <meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="../assets/ar/images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" sizes="57x57" href="../assets/ar/images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../assets/ar/images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../assets/ar/images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../assets/ar/images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../assets/ar/images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../assets/ar/images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../assets/ar/images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../assets/ar/images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/ar/images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/ar/images/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/ar/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/ar/images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/ar/images/favicon/favicon-16x16.png">
+    <script src="../assets/ar/js/vendor/aframe/aframe-v1.0.4.min.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-look-at-component.min.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-ar-nft.js"></script>
+    <link rel="stylesheet" href="../assets/ar/css/main.css">
+  </head>
+  <body style="margin: 0px; overflow: hidden;"><a href="#main" class="skip-link">Skip to content</a>
+    <style>
+      .arjs-loader {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .arjs-loader div {
+        text-align: center;
+        font-size: 1.25em;
+        color: white;
+      }
+      
+    </style>
+    <div class="arjs-loader">
+      <div>Loading, please wait...</div>
+    </div>
+    <!-- a-frame scene-->
+    <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded="" arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;">
+      <!-- a-nft is the anchor that defines an Image Tracking entity-->
+      <!-- on 'url' use the path to the Image Descriptors created before.-->
+      <!-- the path should end with the name without the extension e.g. if file is 'pinball.fset' the path should end with 'pinball'-->
+      <a-nft type="nft" url="&lt;path-to-your-image-descriptors&gt;" smooth="true" smoothcount="10" smoothtolerance=".01" smooththreshold="5">
+        <!-- as a child of the a-nft entity, you can define the content to show. here's a GLTF model entity-->
+        <a-entity gltf-model="&lt;path-to-your-model&gt;" scale="5 5 5" position="50 150 0"></a-entity>
+      </a-nft>
+      <!-- static camera that moves according to the device movemenents-->
+      <a-entity camera=""></a-entity>
+    </a-scene>
+    <script id="toaster-template" type="text/template">{{? it.isReload }}
+      <div class="toaster__card -refresh toaster{{= it.ind }}">
+        <p>{{! it.message }}</p>
+        <button class="btn-refresh js-refresh">REFRESH</button>
+        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+      </div>{{?? }}
+      <div class="toaster__card toaster{{= it.ind }}">
+        <p>{{! it.message }}</p>
+        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+      </div>{{? }}
+    </script>
+  </body>
+</html>
