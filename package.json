@@ -40,7 +40,6 @@
     "gulp-postcss": "~6.3.0",
     "gulp-rename": "~1.2.2",
     "gulp-sass": "^4.0.1",
-    "gulp-shell": "^0.7.1",
     "gulp-sourcemaps": "~2.4.1",
     "gulp-uglify": "~2.0.1",
     "gulp-util": "~3.0.8",
