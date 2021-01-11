@@ -163,7 +163,7 @@ ARjs.MarkerControls.prototype.updateWithModelViewMatrix = function(modelViewMatr
 						exceedsAverageTolerance++;
 					}
 				}
-
+				
 				// if moving (i.e. at least AVERAGE_MATRIX_THRESHOLD entries are over AVERAGE_MATRIX_TOLERANCE)
 				if (exceedsAverageTolerance >= this.parameters.smoothThreshold) {
 					// then update matrix values to average, otherwise, don't render to minimize jitter
