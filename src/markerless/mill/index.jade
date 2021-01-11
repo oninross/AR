@@ -1,0 +1,16 @@
+extends ../../_layouts/base
+
+block config
+    //- Correct base url pathing for this page
+    - var baseUrl = '../../'
+    - var isNewARjsOnly = true
+
+block content
+    a-scene(background='color: #FAFAFA')
+        a-assets
+            a-asset-item#mill(src=baseUrl + 'assets/ar/models/the_mill/scene.gltf')
+
+        a-entity(
+            position='0 0 -200',
+            gltf-model='#mill'
+        )
