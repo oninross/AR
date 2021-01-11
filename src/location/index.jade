@@ -6,7 +6,12 @@ block config
   - var isNewARjs = true
 
 block content
-  a-scene(vr-mode-ui='enabled: false' embedded='' arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;')
+  a-scene(
+    vr-mode-ui='enabled: false',
+    embedded='',
+    arjs='sourceType: webcam; debugUIEnabled: false;'
+  )
+    //- arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'
     //- EY
     a-image(
       height='5',
@@ -80,6 +85,8 @@ block content
     )
 
     a-camera(
-      gps-camera=''
-      rotation-reader='',
-      gpsMinDistance='1')
+      look-controls-enabled='false',
+      arjs-look-controls='smoothingFactor: 0.1',
+      gps-camera='gpsMinDistance: 2.5; gpsTimeInterval: 1000;',
+      rotation-reader=''
+    )

@@ -7,7 +7,11 @@ block config
     - var isOldARjs = true
 
 block content
-    a-scene(embedded='', arjs='debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;')
+    a-scene(
+        vr-mode-ui='enabled: false',
+        embedded='',
+        arjs='debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;'
+    )
         a-assets
             a-asset-item#tokyo(src=baseUrl + 'assets/ar/models/littlest_tokyo/scene.gltf')
             a-asset-item#lighthouse(src=baseUrl + 'assets/ar/models/the_lighthouse/scene.gltf')

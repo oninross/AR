@@ -6,7 +6,10 @@ block config
     - var isNewARjsOnly = true
 
 block content
-    a-scene(background='color: #FAFAFA')
+    a-scene(
+        vr-mode-ui='enabled: false',
+        background='color: #FAFAFA'
+    )
         a-assets
             a-asset-item#tokyo(src=baseUrl + 'assets/ar/models/littlest_tokyo/scene.gltf')
 

@@ -6,7 +6,10 @@ block config
     - var isNewARjsOnly = true
 
 block content
-    a-scene(background='color: #FAFAFA')
+    a-scene(
+        vr-mode-ui='enabled: false',
+        background='color: #FAFAFA'
+    )
         a-assets
             a-asset-item#mill(src=baseUrl + 'assets/ar/models/the_mill/scene.gltf')
 
