@@ -24,8 +24,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/ar/images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="../assets/ar/images/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/ar/images/favicon/favicon-16x16.png">
-    <script src="../assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js"></script>
-    <script src="../assets/ar/js/vendor/aframe/aframe-look-at-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
     <script src="../assets/ar/js/vendor/aframe/aframe-ar-nft.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
@@ -53,16 +52,16 @@
     <div class="arjs-loader">
       <div>Loading, please wait...</div>
     </div>
-    <!-- a-frame scene-->
     <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded="" arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;">
-      <!-- a-nft is the anchor that defines an Image Tracking entity-->
-      <!-- on 'url' use the path to the Image Descriptors created before.-->
-      <!-- the path should end with the name without the extension e.g. if file is 'pinball.fset' the path should end with 'pinball'-->
-      <a-nft type="nft" url="&lt;path-to-your-image-descriptors&gt;" smooth="true" smoothcount="10" smoothtolerance=".01" smooththreshold="5">
-        <!-- as a child of the a-nft entity, you can define the content to show. here's a GLTF model entity-->
-        <a-entity gltf-model="&lt;path-to-your-model&gt;" scale="5 5 5" position="50 150 0"></a-entity>
+      <!-- we use cors proxy to avoid cross-origin problems-->
+      <a-nft type="nft" url="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex" smooth="true" smoothcount="10" smoothtolerance=".01" smooththreshold="5">
+        <a-entity scale="0.3 0.3 0.3">
+          <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9" shadow=""></a-box>
+          <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E" shadow=""></a-sphere>
+          <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D" shadow=""></a-cylinder>
+          <a-plane position="0 0 0" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow=""></a-plane>
+        </a-entity>
       </a-nft>
-      <!-- static camera that moves according to the device movemenents-->
       <a-entity camera=""></a-entity>
     </a-scene>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
