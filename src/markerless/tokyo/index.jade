@@ -1,0 +1,16 @@
+extends ../../_layouts/base
+
+block config
+    //- Correct base url pathing for this page
+    - var baseUrl = '../../'
+    - var isNewARjsOnly = true
+
+block content
+    a-scene(background='color: #FAFAFA')
+        a-assets
+            a-asset-item#tokyo(src=baseUrl + 'assets/ar/models/littlest_tokyo/scene.gltf')
+
+        a-entity(
+            position='0 0.5 -500',
+            gltf-model='#tokyo'
+        )

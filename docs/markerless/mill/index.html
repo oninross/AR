@@ -24,13 +24,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../../assets/ar/images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="../../assets/ar/images/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../../assets/ar/images/favicon/favicon-16x16.png">
+    <script src="../../assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js"></script>
     <link rel="stylesheet" href="../../assets/ar/css/main.css">
   </head>
   <body>
-    <model-viewer alt="A 3D model of an astronaut" ar="" ar-scale="auto" autoplay background-color="#222" camera-controls="" ios-src="../../assets/ar/models/astronaut/Astronaut.usdz" magic-leap="" shadow-intensity="1" src="../../assets/ar/models/astronaut/Astronaut.glb" quick-look-browsers="" unstable-webxr=""></model-viewer>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
-    <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-    <script src="../../assets/ar/js/main.js"></script>
+    <a-scene background="color: #FAFAFA">
+      <a-assets>
+        <a-asset-item id="mill" src="../../assets/ar/models/the_mill/scene.gltf"></a-asset-item>
+      </a-assets>
+      <a-entity position="0 0 -200" gltf-model="#mill"></a-entity>
+    </a-scene>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
       <div class="toaster__card -refresh toaster{{= it.ind }}">
         <p>{{! it.message }}</p>
