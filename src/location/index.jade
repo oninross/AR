@@ -7,6 +7,42 @@ block config
 
 block content
   a-scene(vr-mode-ui='enabled: false' embedded='' arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;')
+    //- EY
+    a-image(
+      height='5',
+      gps-entity-place='latitude: -35.27803651344921; longitude: 149.1256698875552',
+      look-at='[gps-camera]'
+      src='/assets/ar/images/marker.png',
+      width='3'
+    )
+
+    //- Parking
+    a-image(
+      height='5',
+      gps-entity-place='latitude: -35.27863674735512; longitude: 149.12532302520097',
+      look-at='[gps-camera]'
+      src='/assets/ar/images/marker.png',
+      width='3'
+    )
+
+    //- Telstra Tower
+    a-image(
+      height='5',
+      gps-entity-place='latitude: -35.27550367137248; longitude: 149.09777431732635',
+      look-at='[gps-camera]'
+      src='/assets/ar/images/marker.png',
+      width='3'
+    )
+
+    //- Dept. of Agriculture
+    a-image(
+      height='5',
+      gps-entity-place='latitude: -35.28148764062238; longitude: 149.12418261407515',
+      look-at='[gps-camera]'
+      src='/assets/ar/images/marker.png',
+      width='3'
+    )
+
     //- Here
     a-image(
       height='5',
@@ -43,4 +79,7 @@ block content
       width='3'
     )
 
-    a-camera(gps-camera='' rotation-reader='')
+    a-camera(
+      gps-camera=''
+      rotation-reader='',
+      gpsMinDistance='1')
