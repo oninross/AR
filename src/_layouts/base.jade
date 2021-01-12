@@ -5,8 +5,9 @@ block config
   - var baseUrl = config.baseUrl || './'
   - var isMarkerless = config.isMarkerless || false
   - var isARJS = config.isARJS || false
-  - var isOldARjs = config.isOldARjs || false
-  - var isNewARjsOnly = config.isNewARjsOnly || false
+  - var hasAframeAr = config.hasAframeAr || false
+  - var isARJSMarkerless = config.isARJSMarkerless || false
+  - var isLocationBased = config.isLocationBased || false
 
 doctype html
 html.no-js(lang='en')
@@ -40,20 +41,17 @@ html.no-js(lang='en')
     link(rel='icon' type='image/png' sizes='96x96', href= baseUrl + 'assets/ar/images/favicon/favicon-96x96.png')
     link(rel='icon' type='image/png' sizes='16x16', href= baseUrl + 'assets/ar/images/favicon/favicon-16x16.png')
 
-    if isNewARjs
-      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js')
-      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-look-at-component.min.js')
-      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-ar-nft.js')
-    else if isOldARjs
-      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v0.8.2.min.js')
-    else if isNewARjsOnly
+
+    if hasAframeArNft || hasAframeAr || isARJSMarkerless
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js')
 
-    if isARJS
+    if isLocationBased
+      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-look-at-component.min.js')
+
+    if hasAframeArNft
+      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-ar-nft.js')
+    else if hasAframeAr
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-ar.min.js')
-      script.
-        ARjs.Context.baseURL = '../assets/ar/js/vendor/three.js/'
-      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-extras.loaders.min.js')
       script(src= baseUrl + 'assets/ar/js/main.js')
 
     block stylesheets

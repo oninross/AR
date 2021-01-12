@@ -3,11 +3,14 @@ extends ../_layouts/base
 block config
     //- Correct base url pathing for this page
     - var baseUrl = '../'
-    - var isARJS = true
-    - var isOldARjs = true
+    - var hasAframeAr = true
 
 block content
-    a-scene(embedded='', arjs='debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;')
+    a-scene(
+        vr-mode-ui='enabled: false',
+        embedded='',
+        arjs='debugUIEnabled: false; maxDetectionRate:30; trackingMethod: best; patternRatio: 0.6; sourceType: webcam;'
+    )
         a-assets
             a-asset-item#tokyo(src=baseUrl + 'assets/ar/models/littlest_tokyo/scene.gltf')
             a-asset-item#lighthouse(src=baseUrl + 'assets/ar/models/the_lighthouse/scene.gltf')
@@ -21,17 +24,14 @@ block content
             video#beacons(webkit-playsinline='true', playsinline='true', loop='true', controls='true', src=baseUrl + 'assets/ar/videos/beacons.mp4')
 
         a-marker(type='pattern', url=baseUrl + 'assets/ar/patterns/pattern-url.patt')
-            a-entity(scale='0.3 0.3 0.3')
+            a-entity(scale='0.3 0.3 0.3', position='0 0 0')
                 a-box(position='-1 0.5 1', rotation='0 45 0', color='#4CC3D9', shadow='')
                 a-sphere(position='0 1.25 -1', radius='1.25', color='#EF2D5E', shadow='')
                 a-cylinder(position='1 0.75 1', radius='0.5', height='1.5', color='#FFC65D', shadow='')
                 a-plane(position='0 0 0', rotation='-90 0 0', width='4', height='4', color='#7BC8A4', shadow='')
 
         a-marker(type='pattern', url=baseUrl + 'assets/ar/patterns/pattern-ar.patt')
-            a-entity(
-                obj-model='obj: #camp-obj; mtl: #camp-mtl',
-                scale='0.2 0.2 0.2'
-            )
+            a-entity(obj-model='obj: #camp-obj; mtl: #camp-mtl', scale='0.2 0.2 0.2', position='0 0 0')
 
         a-marker(type='pattern', url=baseUrl + 'assets/ar/patterns/pattern-lighthouse.patt')
             a-gltf-model(src='#lighthouse', position='0 0 0', scale='0.005 0.005 0.005' rotation='0 0 0')
@@ -48,6 +48,7 @@ block content
 
 
         a-marker#hiroMarker(type='pattern', markerhandler, emitevents="true", url=baseUrl + 'assets/ar/patterns/pattern-hiro.patt')
-            a-video(src='#beacons', width='1.6', height='0.9', rotation='270 0 0', autoplay='true')
+            a-video(src='#beacons', width='1.6', height='0.9', rotation='270 0 0', position='0 0 0' autoplay='true')
 
-        a-camera-static
+
+        a-entity(camera='')
