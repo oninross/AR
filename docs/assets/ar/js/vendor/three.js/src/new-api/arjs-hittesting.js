@@ -1,5 +1,5 @@
 // @namespace
-var ARjs = ARjs || {};
+var ARjs = ARjs || {}
 
 /**
  * Create an anchor in the real world
@@ -8,17 +8,15 @@ var ARjs = ARjs || {};
  * @param {Object} markerParameters - parameter of this anchor
  */
 ARjs.HitTesting = function (arSession) {
-    var _this = this;
-    var arContext = arSession.arContext;
-    var trackingBackend = arContext.parameters.trackingBackend;
+    var _this = this
+    var arContext = arSession.arContext
+    var trackingBackend = arContext.parameters.trackingBackend
 
-    this.enabled = true;
-    this._arSession = arSession;
-    this._hitTestingPlane = null;
-    _this._hitTestingPlane = new THREEx.HitTestingPlane(
-        arSession.arSource.domElement
-    );
-};
+    this.enabled = true
+    this._arSession = arSession
+    this._hitTestingPlane = null
+    _this._hitTestingPlane = new THREEx.HitTestingPlane(arSession.arSource.domElement)
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //		update function
@@ -29,18 +27,15 @@ ARjs.HitTesting = function (arSession) {
  * @param {THREE.Camera} camera   - the camera to use
  * @param {THREE.Object3D} object3d -
  */
-ARjs.HitTesting.prototype.update = function (
-    camera,
-    pickingRoot,
-    changeMatrixMode
-) {
+ARjs.HitTesting.prototype.update = function (camera, pickingRoot, changeMatrixMode) {
     // if it isnt enabled, do nothing
-    if (this.enabled === false) return;
+    if (this.enabled === false) return
+
 
     if (this._hitTestingPlane !== null) {
-        this._hitTestingPlane.update(camera, pickingRoot, changeMatrixMode);
-    } else console.assert(false);
-};
+        this._hitTestingPlane.update(camera, pickingRoot, changeMatrixMode)
+    } else console.assert(false)
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //		actual hit testing
@@ -54,16 +49,16 @@ ARjs.HitTesting.prototype.update = function (
  * @return {[ARjs.HitTesting.Result]} - array of result
  */
 ARjs.HitTesting.prototype.testDomEvent = function (domEvent) {
-    var trackingBackend = this._arSession.arContext.parameters.trackingBackend;
-    var arSource = this._arSession.arSource;
+    var trackingBackend = this._arSession.arContext.parameters.trackingBackend
+    var arSource = this._arSession.arSource
 
     // if it isnt enabled, do nothing
-    if (this.enabled === false) return [];
-    var mouseX = domEvent.clientX / arSource.domElementWidth();
-    var mouseY = domEvent.clientY / arSource.domElementHeight();
+    if (this.enabled === false) return []
+    var mouseX = domEvent.clientX / arSource.domElementWidth()
+    var mouseY = domEvent.clientY / arSource.domElementHeight()
 
-    return this.test(mouseX, mouseY);
-};
+    return this.test(mouseX, mouseY)
+}
 
 /**
  * Test the real world for intersections.
@@ -73,28 +68,24 @@ ARjs.HitTesting.prototype.testDomEvent = function (domEvent) {
  * @return {[ARjs.HitTesting.Result]} - array of result
  */
 ARjs.HitTesting.prototype.test = function (mouseX, mouseY) {
-    var arContext = this._arSession.arContext;
-    var trackingBackend = arContext.parameters.trackingBackend;
-    var hitTestResults = [];
+    var arContext = this._arSession.arContext
+    var trackingBackend = arContext.parameters.trackingBackend
+    var hitTestResults = []
 
     // if it isnt enabled, do nothing
-    if (this.enabled === false) return [];
+    if (this.enabled === false) return []
 
-    var result = this._hitTestingPlane.test(mouseX, mouseY);
+    var result = this._hitTestingPlane.test(mouseX, mouseY)
 
     // if no result is found, return now
-    if (result === null) return hitTestResults;
+    if (result === null) return hitTestResults
 
     // build a ARjs.HitTesting.Result
-    var hitTestResult = new ARjs.HitTesting.Result(
-        result.position,
-        result.quaternion,
-        result.scale
-    );
-    hitTestResults.push(hitTestResult);
+    var hitTestResult = new ARjs.HitTesting.Result(result.position, result.quaternion, result.scale)
+    hitTestResults.push(hitTestResult)
 
-    return hitTestResults;
-};
+    return hitTestResults
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //		ARjs.HitTesting.Result
@@ -107,10 +98,10 @@ ARjs.HitTesting.prototype.test = function (mouseX, mouseY) {
  * @param {THREE.Vector3} scale - scale
  */
 ARjs.HitTesting.Result = function (position, quaternion, scale) {
-    this.position = position;
-    this.quaternion = quaternion;
-    this.scale = scale;
-};
+    this.position = position
+    this.quaternion = quaternion
+    this.scale = scale
+}
 
 /**
  * Apply to a controlled object3d
@@ -118,12 +109,12 @@ ARjs.HitTesting.Result = function (position, quaternion, scale) {
  * @param {THREE.Object3D} object3d - the result to apply
  */
 ARjs.HitTesting.Result.prototype.apply = function (object3d) {
-    object3d.position.copy(this.position);
-    object3d.quaternion.copy(this.quaternion);
-    object3d.scale.copy(this.scale);
+    object3d.position.copy(this.position)
+    object3d.quaternion.copy(this.quaternion)
+    object3d.scale.copy(this.scale)
 
-    object3d.updateMatrix();
-};
+    object3d.updateMatrix()
+}
 
 /**
  * Apply to a controlled object3d
@@ -131,12 +122,12 @@ ARjs.HitTesting.Result.prototype.apply = function (object3d) {
  * @param {THREE.Object3D} object3d - the result to apply
  */
 ARjs.HitTesting.Result.prototype.applyPosition = function (object3d) {
-    object3d.position.copy(this.position);
+    object3d.position.copy(this.position)
 
-    object3d.updateMatrix();
+    object3d.updateMatrix()
 
-    return this;
-};
+    return this
+}
 
 /**
  * Apply to a controlled object3d
@@ -144,9 +135,9 @@ ARjs.HitTesting.Result.prototype.applyPosition = function (object3d) {
  * @param {THREE.Object3D} object3d - the result to apply
  */
 ARjs.HitTesting.Result.prototype.applyQuaternion = function (object3d) {
-    object3d.quaternion.copy(this.quaternion);
+    object3d.quaternion.copy(this.quaternion)
 
-    object3d.updateMatrix();
+    object3d.updateMatrix()
 
-    return this;
-};
+    return this
+}

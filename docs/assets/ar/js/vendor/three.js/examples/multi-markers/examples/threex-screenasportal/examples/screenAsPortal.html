@@ -56,6 +56,7 @@
 		var urlOptions = {}
 	}
 	if( urlOptions.trackingBackend === undefined ) urlOptions.trackingBackend = 'artoolkit'
+
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Init
 	//////////////////////////////////////////////////////////////////////////////////
@@ -99,6 +100,7 @@
 	arToolkitSource.init(function onReady(){
 		onResize()
 	})
+
 	// handle resize
 	window.addEventListener('resize', function(){
 		onResize()
@@ -137,6 +139,7 @@
 	//////////////////////////////////////////////////////////////////////////////
 	//		get multiMarkerFile
 	//////////////////////////////////////////////////////////////////////////////
+
 	// if no localStorage.ARjsMultiMarkerFile, then write one with default marker
 	if( localStorage.getItem('ARjsMultiMarkerFile') === null ){
 		THREEx.ArMultiMarkerUtils.storeDefaultMultiMarkerFile(urlOptions.trackingBackend)
@@ -153,6 +156,7 @@
 	// build a markerRoot
 	var markerRoot = new THREE.Group()
 	scene.add(markerRoot)
+
 	// build a multiMarkerControls
 	var multiMarkerControls = THREEx.ArMultiMarkerControls.fromJSON(arToolkitContext, scene, markerRoot, multiMarkerFile)
 
@@ -209,6 +213,7 @@
 		var learnerURL = THREEx.ArToolkitContext.baseURL + 'examples/multi-markers/examples/learner.html'
 		THREEx.ArMultiMarkerUtils.navigateToLearnerPage(learnerURL, urlOptions.trackingBackend)
 	})
+
 	document.querySelector('#markerHelpersButton').addEventListener('click', function(){
 		markerHelpersToggleVisibility()
 	})
