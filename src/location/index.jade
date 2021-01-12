@@ -4,6 +4,7 @@ block config
   //- Correct base url pathing for this page
   - var baseUrl = '../'
   - var hasAframeArNft = true
+  - var isLocationBased = true
 
 block content
   a-scene(
@@ -13,27 +14,36 @@ block content
   )
     //- arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'
     //- EY
+    a-entity(
+      gps-entity-place='latitude: -35.277999296300074; longitude: 149.12598310658413',
+      look-at='[gps-camera]'
+    )
+
+      a-text(
+        value='You are at EY',
+        look-at='[gps-camera]',
+        scale='120 120 120',
+
+      )
+      a-image(
+        height='5',
+        src=baseUrl + '/assets/ar/images/marker.png',
+        width='3'
+      )
+
+    //- Macquarie Building
     a-image(
       height='5',
-      gps-entity-place='latitude: -35.27803651344921; longitude: 149.1256698875552',
+      gps-entity-place='latitude: -35.27846835794417; longitude: 149.12680389389158',
       look-at='[gps-camera]'
       src=baseUrl + '/assets/ar/images/marker.png',
       width='3'
     )
 
-    //- Parking
+    //- DTA
     a-image(
       height='5',
-      gps-entity-place='latitude: -35.27863674735512; longitude: 149.12532302520097',
-      look-at='[gps-camera]'
-      src=baseUrl + '/assets/ar/images/marker.png',
-      width='3'
-    )
-
-    //- Telstra Tower
-    a-image(
-      height='5',
-      gps-entity-place='latitude: -35.27550367137248; longitude: 149.09777431732635',
+      gps-entity-place='latitude: -35.2777518967725; longitude: 149.12667613488009',
       look-at='[gps-camera]'
       src=baseUrl + '/assets/ar/images/marker.png',
       width='3'
@@ -86,6 +96,5 @@ block content
 
     a-camera(
       arjs-look-controls='smoothingFactor: 0.1',
-      gps-camera='gpsMinDistance: 2.5; gpsTimeInterval: 1000;',
-      rotation-reader=''
+      gps-camera='gpsMinDistance: 2.5; gpsTimeInterval: 1000;'
     )

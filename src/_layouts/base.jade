@@ -7,6 +7,7 @@ block config
   - var isARJS = config.isARJS || false
   - var hasAframeAr = config.hasAframeAr || false
   - var isARJSMarkerless = config.isARJSMarkerless || false
+  - var isLocationBased = config.isLocationBased || false
 
 doctype html
 html.no-js(lang='en')
@@ -43,6 +44,9 @@ html.no-js(lang='en')
 
     if hasAframeArNft || hasAframeAr || isARJSMarkerless
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js')
+
+    if isLocationBased
+      script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-look-at-component.min.js')
 
     if hasAframeArNft
       script(src=baseUrl + 'assets/ar/js/vendor/aframe/aframe-ar-nft.js')
