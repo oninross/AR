@@ -22,11 +22,12 @@ block content
         value='You are at EY',
         look-at='[gps-camera]',
         scale='30 30 30',
+        position='20 0 0'
 
       )
       a-image(
         height='5',
-        src=baseUrl + '/assets/ar/images/marker.png',
+        src=baseUrl + 'assets/ar/images/marker.png',
         width='3'
       )
 
@@ -39,10 +40,11 @@ block content
         value='Macquarie Building',
         look-at='[gps-camera]',
         scale='30 30 30',
+        position='20 0 0'
       )
       a-image(
         height='5',
-        src=baseUrl + '/assets/ar/images/marker.png',
+        src=baseUrl + 'assets/ar/images/marker.png',
         width='3'
       )
 
@@ -55,10 +57,11 @@ block content
         value='DTA',
         look-at='[gps-camera]',
         scale='30 30 30',
+        position='20 0 0'
       )
       a-image(
         height='5',
-        src=baseUrl + '/assets/ar/images/marker.png',
+        src=baseUrl + 'assets/ar/images/marker.png',
         width='3'
       )
 
@@ -67,7 +70,7 @@ block content
     //-   height='5',
     //-   gps-entity-place='latitude: -35.28148764062238; longitude: 149.12418261407515',
     //-   look-at='[gps-camera]'
-    //-   src=baseUrl + '/assets/ar/images/marker.png',
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
     //-   width='3'
     //- )
 
@@ -76,7 +79,7 @@ block content
     //-   height='5',
     //-   gps-entity-place='latitude: -35.1948461; longitude: 149.1156572',
     //-   look-at='[gps-camera]'
-    //-   src=baseUrl + '/assets/ar/images/marker.png',
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
     //-   width='3'
     //- )
 
@@ -85,7 +88,7 @@ block content
     //-   height='5',
     //-   gps-entity-place='latitude: -35.197245; longitude: 149.117464',
     //-   look-at='[gps-camera]'
-    //-   src=baseUrl + '/assets/ar/images/marker.png',
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
     //-   width='3'
     //- )
 
@@ -94,7 +97,7 @@ block content
     //-   height='5',
     //-   gps-entity-place='latitude: -35.196145; longitude: 149.115977',
     //-   look-at='[gps-camera]'
-    //-   src=baseUrl + '/assets/ar/images/marker.png',
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
     //-   width='3'
     //- )
 
@@ -103,11 +106,11 @@ block content
     //-   height='5',
     //-   gps-entity-place='latitude: -35.197325; longitude: 149.115671',
     //-   look-at='[gps-camera]'
-    //-   src=baseUrl + '/assets/ar/images/marker.png',
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
     //-   width='3'
     //- )
 
     a-camera(
       arjs-look-controls='smoothingFactor: 0.1',
-      gps-camera='gpsMinDistance: 2.5; gpsTimeInterval: 1000;'
+      gps-camera='gpsMinDistance: 1; positionMinAccuracy: 10;'
     )
