@@ -24,10 +24,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/ar/images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="../assets/ar/images/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/ar/images/favicon/favicon-16x16.png">
-    <script src="../assets/ar/js/vendor/aframe/aframe-v0.8.2.min.js"></script>
+    <script src="../assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js"></script>
     <script src="../assets/ar/js/vendor/aframe/aframe-ar.min.js"></script>
-    <script>ARjs.Context.baseURL = '../assets/ar/js/vendor/three.js/'</script>
-    <script src="../assets/ar/js/vendor/aframe/aframe-extras.loaders.min.js"></script>
     <script src="../assets/ar/js/main.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
@@ -43,7 +41,7 @@
         <video id="beacons" webkit-playsinline="true" playsinline="true" loop controls src="../assets/ar/videos/beacons.mp4"></video>
       </a-assets>
       <a-marker type="pattern" url="../assets/ar/patterns/pattern-url.patt">
-        <a-entity scale="0.3 0.3 0.3">
+        <a-entity scale="0.3 0.3 0.3" position="0 0 0">
           <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9" shadow=""></a-box>
           <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E" shadow=""></a-sphere>
           <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D" shadow=""></a-cylinder>
@@ -51,7 +49,7 @@
         </a-entity>
       </a-marker>
       <a-marker type="pattern" url="../assets/ar/patterns/pattern-ar.patt">
-        <a-entity obj-model="obj: #camp-obj; mtl: #camp-mtl" scale="0.2 0.2 0.2"></a-entity>
+        <a-entity obj-model="obj: #camp-obj; mtl: #camp-mtl" scale="0.2 0.2 0.2" position="0 0 0"></a-entity>
       </a-marker>
       <a-marker type="pattern" url="../assets/ar/patterns/pattern-lighthouse.patt">
         <a-gltf-model src="#lighthouse" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 0 0"></a-gltf-model>
@@ -66,9 +64,9 @@
         <a-gltf-model src="#drone" position="0 0 0" scale="0.005 0.005 0.005" rotation="0 180 0" animation-mixer></a-gltf-model>
       </a-marker>
       <a-marker id="hiroMarker" type="pattern" markerhandler emitevents="true" url="../assets/ar/patterns/pattern-hiro.patt">
-        <a-video src="#beacons" width="1.6" height="0.9" rotation="270 0 0" autoplay></a-video>
+        <a-video src="#beacons" width="1.6" height="0.9" rotation="270 0 0" position="0 0 0" autoplay></a-video>
       </a-marker>
-      <a-camera-static></a-camera-static>
+      <a-entity camera=""></a-entity>
     </a-scene>
     <script id="toaster-template" type="text/template">{{? it.isReload }}
       <div class="toaster__card -refresh toaster{{= it.ind }}">
