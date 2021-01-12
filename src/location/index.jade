@@ -1,0 +1,116 @@
+extends ../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../'
+  - var hasAframeArNft = true
+  - var isLocationBased = true
+
+block content
+  a-scene(
+    vr-mode-ui='enabled: false',
+    embedded='',
+    arjs='sourceType: webcam; debugUIEnabled: false;'
+  )
+    //- arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'
+    //- EY
+    a-entity(
+      gps-entity-place='latitude: -35.277999296300074; longitude: 149.12598310658413',
+      look-at='[gps-camera]'
+    )
+      a-text(
+        value='You are at EY',
+        look-at='[gps-camera]',
+        scale='30 30 30',
+        position='20 0 0'
+
+      )
+      a-image(
+        height='5',
+        src=baseUrl + 'assets/ar/images/marker.png',
+        width='3'
+      )
+
+    //- Macquarie Building
+    a-entity(
+      gps-entity-place='latitude: -35.27846835794417; longitude: 149.12680389389158',
+      look-at='[gps-camera]'
+    )
+      a-text(
+        value='Macquarie Building',
+        look-at='[gps-camera]',
+        scale='30 30 30',
+        position='20 0 0'
+      )
+      a-image(
+        height='5',
+        src=baseUrl + 'assets/ar/images/marker.png',
+        width='3'
+      )
+
+    //- DTA
+    a-entity(
+      gps-entity-place='latitude: -35.2777518967725; longitude: 149.12667613488009',
+      look-at='[gps-camera]'
+    )
+      a-text(
+        value='DTA',
+        look-at='[gps-camera]',
+        scale='30 30 30',
+        position='20 0 0'
+      )
+      a-image(
+        height='5',
+        src=baseUrl + 'assets/ar/images/marker.png',
+        width='3'
+      )
+
+    //- //- Dept. of Agriculture
+    //- a-image(
+    //-   height='5',
+    //-   gps-entity-place='latitude: -35.28148764062238; longitude: 149.12418261407515',
+    //-   look-at='[gps-camera]'
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
+    //-   width='3'
+    //- )
+
+    //- //- Here
+    //- a-image(
+    //-   height='5',
+    //-   gps-entity-place='latitude: -35.1948461; longitude: 149.1156572',
+    //-   look-at='[gps-camera]'
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
+    //-   width='3'
+    //- )
+
+    //- //- Round About
+    //- a-image(
+    //-   height='5',
+    //-   gps-entity-place='latitude: -35.197245; longitude: 149.117464',
+    //-   look-at='[gps-camera]'
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
+    //-   width='3'
+    //- )
+
+    //- //- Bus Stop
+    //- a-image(
+    //-   height='5',
+    //-   gps-entity-place='latitude: -35.196145; longitude: 149.115977',
+    //-   look-at='[gps-camera]'
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
+    //-   width='3'
+    //- )
+
+    //- //- Boogie
+    //- a-image(
+    //-   height='5',
+    //-   gps-entity-place='latitude: -35.197325; longitude: 149.115671',
+    //-   look-at='[gps-camera]'
+    //-   src=baseUrl + 'assets/ar/images/marker.png',
+    //-   width='3'
+    //- )
+
+    a-camera(
+      arjs-look-controls='smoothingFactor: 0.1',
+      gps-camera='gpsMinDistance: 1; positionMinAccuracy: 10;'
+    )
