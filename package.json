@@ -100,6 +100,7 @@
       "vendor": "_vendor",
       "patterns": "_patterns",
       "models": "_models",
+      "sets": "_sets",
       "videos": "_videos",
       "data": "_data"
     },

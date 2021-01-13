@@ -1,23 +1,23 @@
-'use strict';
+"use strict";
 
-import gulp from 'gulp';
-import gulpLoadPlugins from 'gulp-load-plugins';
-import browserSyncLib from 'browser-sync';
-import pjson from './package.json';
-import minimist from 'minimist';
-import glob from 'glob';
+import gulp from "gulp";
+import gulpLoadPlugins from "gulp-load-plugins";
+import browserSyncLib from "browser-sync";
+import pjson from "./package.json";
+import minimist from "minimist";
+import glob from "glob";
 
 // Load all gulp plugins based on their names
 // EX: gulp-copy -> copy
 const plugins = gulpLoadPlugins();
 
-const defaultNotification = function(err) {
-  return {
-    subtitle: err.plugin,
-    message: err.message,
-    sound: 'Funk',
-    onLast: true,
-  };
+const defaultNotification = function (err) {
+    return {
+        subtitle: err.plugin,
+        message: err.message,
+        sound: "Funk",
+        onLast: true,
+    };
 };
 
 let config = Object.assign({}, pjson.config, defaultNotification);
@@ -31,52 +31,59 @@ let browserSync = browserSyncLib.create();
 
 // This will grab all js in the `gulp` directory
 // in order to load all gulp tasks
-glob.sync('./gulp/**/*.js').filter(function(file) {
-  return (/\.(js)$/i).test(file);
-}).map(function(file) {
-  require(file)(gulp, plugins, args, config, taskTarget, browserSync);
-});
+glob.sync("./gulp/**/*.js")
+    .filter(function (file) {
+        return /\.(js)$/i.test(file);
+    })
+    .map(function (file) {
+        require(file)(gulp, plugins, args, config, taskTarget, browserSync);
+    });
 
 // Default task
-gulp.task('default', ['clean'], () => {
-  gulp.start('build');
+gulp.task("default", ["clean"], () => {
+    gulp.start("build");
 });
 
 // Build production-ready code
-gulp.task('build', [
-  'copy',
-  'copyFonts',
-  'copyVendor',
-  'copyPatterns',
-  'copyModels',
-  'copyVideos',
-  'imagemin',
-  'jade',
-  'sass',
-  'browserify'
+gulp.task("build", [
+    "copy",
+    "copyFonts",
+    "copyVendor",
+    "copyPatterns",
+    "copySets",
+    "copyModels",
+    "copyVideos",
+    "imagemin",
+    "jade",
+    "sass",
+    "browserify",
 ]);
 
 // Server tasks with watch
-gulp.task('serve', [
-  'imagemin',
-  'copy',
-  'copyFonts',
-  'copyVendor',
-  'copyPatterns',
-  'copyModels',
-  'copyVideos',
-  'jade',
-  'sass',
-  'browserify',
-  'browserSync',
-  'watch'
+gulp.task("serve", [
+    "imagemin",
+    "copy",
+    "copyFonts",
+    "copyVendor",
+    "copyPatterns",
+    "copySets",
+    "copyModels",
+    "copyVideos",
+    "jade",
+    "sass",
+    "browserify",
+    "browserSync",
+    "watch",
 ]);
 
 // Testing
-gulp.task('test', ['eslint'], (done) => {
-  new KarmaServer({
-    configFile: path.join(__dirname, '/karma.conf.js'),
-    singleRun: !args.watch,
-    autoWatch: args.watch
-  }, done).start();
+gulp.task("test", ["eslint"], (done) => {
+    new KarmaServer(
+        {
+            configFile: path.join(__dirname, "/karma.conf.js"),
+            singleRun: !args.watch,
+            autoWatch: args.watch,
+        },
+        done
+    ).start();
 });
