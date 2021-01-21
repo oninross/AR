@@ -1,80 +1,75 @@
 // Main javascript entry point
 // Should handle bootstrapping/starting application
 
-'use strict';
+"use strict";
 
-import $ from 'jquery';
-// import 'lazyload';
-// import 'TweenLite';
-// import 'EasePack';
-// import 'AttrPlugin';
-// import 'CSSPlugin';
-// import 'doT';
-
-// import './common/_modernizr';
+import $ from "jquery";
 
 // import MaterialDesign from './common/_material-design';
-import ServiceWorker from '../_modules/serviceworker/serviceworker';
+import ServiceWorker from "../_modules/serviceworker/serviceworker";
 
 let isAframePresent = false;
 let isReady = false;
 let isPlaying = false;
 let triggerPlay = false;
-let videoBeacons = '';
+let videoBeacons = "";
 
-if (typeof AFRAME !== 'undefined') {
+if (typeof AFRAME !== "undefined") {
     isAframePresent = true;
-    AFRAME.registerComponent('markerhandler', {
+    AFRAME.registerComponent("markerhandler", {
         init: function () {
             // Set up the tick throttling. Will check if marker is active every 500ms
             this.tick = AFRAME.utils.throttleTick(this.tick, 200, this);
         },
         tick: function (t, dt) {
             if (isReady) {
-                if (document.querySelector("#hiroMarker").object3D.visible && !isPlaying) {
-                    console.log('Marker is present');
+                if (
+                    document.querySelector("#hiroMarker").object3D.visible &&
+                    !isPlaying
+                ) {
+                    console.log("Marker is present");
                     playVideo();
-                } else if (!document.querySelector("#hiroMarker").object3D.visible && isPlaying) {
-                    console.log('Marker is not present');
+                } else if (
+                    !document.querySelector("#hiroMarker").object3D.visible &&
+                    isPlaying
+                ) {
+                    console.log("Marker is not present");
                     stopVideo();
                 }
             }
-        }
+        },
     });
 }
 
-
 $(() => {
-    // Init Material Design
-    // const material = new MaterialDesign();
-    // material.init();
-
-
     // Simple Service Worker to make App Install work (OPTIONAL)
     // new ServiceWorker();
 
     if (isAframePresent) {
-        videoBeacons = document.getElementById('beacons');
+        videoBeacons = document.getElementById("beacons");
 
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault()
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
         });
 
-        window.addEventListener('touchend', function () {
-            triggerPlay = true;
-        }, false);
+        window.addEventListener(
+            "touchend",
+            function () {
+                triggerPlay = true;
+            },
+            false
+        );
 
         isReady = true;
     }
-
 
     console.log("I'm a AR!!!");
 });
 
 function playVideo() {
     // if (triggerPlay) {
-        isPlaying = true;
-        videoBeacons.play();
+    isPlaying = true;
+    videoBeacons.play();
     // }
 }
 
