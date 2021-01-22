@@ -1,0 +1,23 @@
+extends ../../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../../'
+  - var isMarkerless = true
+
+block content
+  //- Astronaut
+  model-viewer(
+    alt = 'A 3D model of a mech drone',
+    ar = '',
+    ar-scale = 'auto'
+    autoplay = '',
+    background-color = '#222',
+    camera-controls = '',
+    ios-src = baseUrl + 'assets/ar/models/littlest-tokyo/scene.gltf',
+    magic-leap = '',
+    shadow-intensity = '1',
+    src = baseUrl + 'assets/ar/models/littlest-tokyo/scene.gltf',
+    quick-look-browsers = '',
+    unstable-webxr = ''
+  )

@@ -1,0 +1,23 @@
+extends ../../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../../'
+  - var isMarkerless = true
+
+block content
+  //- cottage-diorama
+  model-viewer(
+    alt = 'A 3D model of an cottage-diorama',
+    ar = '',
+    ar-scale = 'auto'
+    autoplay = '',
+    background-color = '#222',
+    camera-controls = '',
+    ios-src = baseUrl + 'assets/ar/models/cottage-diorama/cottage-diorama.usdz',
+    magic-leap = '',
+    shadow-intensity = '1',
+    src = baseUrl + 'assets/ar/models/cottage-diorama/scene.gltf',
+    quick-look-browsers = '',
+    unstable-webxr = ''
+  )

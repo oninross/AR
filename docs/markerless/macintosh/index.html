@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>AR Firestarter</title>
+    <meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="../../assets/ar/images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" sizes="57x57" href="../../assets/ar/images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../../assets/ar/images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../../assets/ar/images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../../assets/ar/images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../../assets/ar/images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../../assets/ar/images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../../assets/ar/images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../../assets/ar/images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/ar/images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../assets/ar/images/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/ar/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../../assets/ar/images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/ar/images/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="../../assets/ar/css/main.css">
+  </head>
+  <body style="margin: 0px; overflow: hidden;">
+    <model-viewer alt="A 3D model of an macintosh" ar="" ar-scale="auto" autoplay background-color="#222" camera-controls="" ios-src="../../assets/ar/models/macintosh/macintosh.usdz" magic-leap="" shadow-intensity="1" src="../../assets/ar/models/macintosh/scene.gltf" quick-look-browsers="" unstable-webxr=""></model-viewer>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+    <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+    <script src="../../assets/ar/js/main.js"></script>
+    <script id="toaster-template" type="text/template">{{? it.isReload }}
+      <div class="toaster__card -refresh toaster{{= it.ind }}">
+        <p>{{! it.message }}</p>
+        <button class="btn-refresh js-refresh">REFRESH</button>
+        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+      </div>{{?? }}
+      <div class="toaster__card toaster{{= it.ind }}">
+        <p>{{! it.message }}</p>
+        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+      </div>{{? }}
+    </script>
+  </body>
+</html>

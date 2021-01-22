@@ -1,0 +1,23 @@
+extends ../../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../../'
+  - var isMarkerless = true
+
+block content
+  //- bridge
+  model-viewer(
+    alt = 'A 3D model of an bridge',
+    ar = '',
+    ar-scale = 'auto'
+    autoplay = '',
+    background-color = '#222',
+    camera-controls = '',
+    ios-src = baseUrl + 'assets/ar/models/bridge/bridge.usdz',
+    magic-leap = '',
+    shadow-intensity = '1',
+    src = baseUrl + 'assets/ar/models/bridge/scene.gltf',
+    quick-look-browsers = '',
+    unstable-webxr = ''
+  )
