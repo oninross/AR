@@ -67,7 +67,6 @@ $(() => {
 
     const timer = setInterval(() => {
         if (!!modelViewerTransform.updateFraming()) {
-            console.log("asdasd");
             modelViewerTransform.scale = `0.1 0.1 0.1`;
             modelViewerTransform.updateFraming();
             clearInterval(timer);
