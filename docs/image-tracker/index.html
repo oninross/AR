@@ -28,52 +28,5 @@
     <script src="../assets/ar/js/vendor/aframe/aframe-ar-nft.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
-  <body style="margin: 0px; overflow: hidden;">
-    <style>
-      .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
-      }
-      
-    </style>
-    <div class="arjs-loader">
-      <div>Loading, please wait...</div>
-    </div>
-    <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded="" arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;">
-      <!-- we use cors proxy to avoid cross-origin problems-->
-      <a-nft type="nft" url="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex" smooth="true" smoothcount="10" smoothtolerance=".01" smooththreshold="5">
-        <a-entity scale="0.3 0.3 0.3">
-          <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9" shadow=""></a-box>
-          <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E" shadow=""></a-sphere>
-          <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D" shadow=""></a-cylinder>
-          <a-plane position="0 0 0" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow=""></a-plane>
-        </a-entity>
-      </a-nft>
-      <a-entity camera=""></a-entity>
-    </a-scene>
-    <script id="toaster-template" type="text/template">{{? it.isReload }}
-      <div class="toaster__card -refresh toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="btn-refresh js-refresh">REFRESH</button>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{?? }}
-      <div class="toaster__card toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{? }}
-    </script>
-  </body>
+  <body style="margin: 0px; overflow: hidden;"></body>
 </html>

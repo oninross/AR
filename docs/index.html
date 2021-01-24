@@ -26,7 +26,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/ar/images/favicon/favicon-16x16.png">
     <link rel="stylesheet" href="./assets/ar/css/main.css">
   </head>
-  <body style="margin: 0px; overflow: hidden;">
+  <body>
     <div class="container">
       <h2>AR Table of Contents</h2>
       <h3>Markerless</h3>
@@ -63,16 +63,16 @@
         <li><a href="./location">Location-based</a></li>
       </ul>
     </div>
-    <script id="toaster-template" type="text/template">{{? it.isReload }}
-      <div class="toaster__card -refresh toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="btn-refresh js-refresh">REFRESH</button>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{?? }}
-      <div class="toaster__card toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{? }}
-    </script>
   </body>
+  <script id="toaster-template" type="text/template">{{? it.isReload }}
+    <div class="toaster__card -refresh toaster{{= it.ind }}">
+      <p>{{! it.message }}</p>
+      <button class="btn-refresh js-refresh">REFRESH</button>
+      <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+    </div>{{?? }}
+    <div class="toaster__card toaster{{= it.ind }}">
+      <p>{{! it.message }}</p>
+      <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+    </div>{{? }}
+  </script>
 </html>

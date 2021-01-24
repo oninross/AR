@@ -26,21 +26,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../../assets/ar/images/favicon/favicon-16x16.png">
     <link rel="stylesheet" href="../../assets/ar/css/main.css">
   </head>
-  <body style="margin: 0px; overflow: hidden;">
+  <body>
     <model-viewer alt="A 3D model of a tokyo neighbourhood" ar="" ar-scale="auto" autoplay background-color="#222" camera-controls="" ios-src="../../assets/ar/models/littlest-tokyo/scene.gltf" shadow-intensity="1" src="../../assets/ar/models/littlest-tokyo/scene.gltf"></model-viewer>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
-    <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-    <script src="../../assets/ar/js/main.js"></script>
-    <script id="toaster-template" type="text/template">{{? it.isReload }}
-      <div class="toaster__card -refresh toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="btn-refresh js-refresh">REFRESH</button>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{?? }}
-      <div class="toaster__card toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{? }}
-    </script>
   </body>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+  <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+  <script src="../../assets/ar/js/main.js"></script>
+  <script id="toaster-template" type="text/template">{{? it.isReload }}
+    <div class="toaster__card -refresh toaster{{= it.ind }}">
+      <p>{{! it.message }}</p>
+      <button class="btn-refresh js-refresh">REFRESH</button>
+      <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+    </div>{{?? }}
+    <div class="toaster__card toaster{{= it.ind }}">
+      <p>{{! it.message }}</p>
+      <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
+    </div>{{? }}
+  </script>
 </html>

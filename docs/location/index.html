@@ -29,32 +29,5 @@
     <script src="../assets/ar/js/vendor/aframe/aframe-ar-nft.js"></script>
     <link rel="stylesheet" href="../assets/ar/css/main.css">
   </head>
-  <body style="margin: 0px; overflow: hidden;">
-    <a-scene vr-mode-ui="enabled: false" embedded="" arjs="sourceType: webcam; debugUIEnabled: false;">
-      <a-entity gps-entity-place="latitude: -35.277999296300074; longitude: 149.12598310658413" look-at="[gps-camera]">
-        <a-text value="You are at EY" look-at="[gps-camera]" scale="30 30 30" position="20 0 0"></a-text>
-        <a-image height="5" src="../assets/ar/images/marker.png" width="3"></a-image>
-      </a-entity>
-      <a-entity gps-entity-place="latitude: -35.27846835794417; longitude: 149.12680389389158" look-at="[gps-camera]">
-        <a-text value="Macquarie Building" look-at="[gps-camera]" scale="30 30 30" position="20 0 0"></a-text>
-        <a-image height="5" src="../assets/ar/images/marker.png" width="3"></a-image>
-      </a-entity>
-      <a-entity gps-entity-place="latitude: -35.2777518967725; longitude: 149.12667613488009" look-at="[gps-camera]">
-        <a-text value="DTA" look-at="[gps-camera]" scale="30 30 30" position="20 0 0"></a-text>
-        <a-image height="5" src="../assets/ar/images/marker.png" width="3"></a-image>
-      </a-entity>
-      <a-camera gps-camera=""></a-camera>
-    </a-scene>
-    <script id="toaster-template" type="text/template">{{? it.isReload }}
-      <div class="toaster__card -refresh toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="btn-refresh js-refresh">REFRESH</button>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{?? }}
-      <div class="toaster__card toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{? }}
-    </script>
-  </body>
+  <body style="margin: 0px; overflow: hidden;"></body>
 </html>

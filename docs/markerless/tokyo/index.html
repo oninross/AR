@@ -27,23 +27,5 @@
     <script src="../../assets/ar/js/vendor/aframe/aframe-v1.1.0.min.js"></script>
     <link rel="stylesheet" href="../../assets/ar/css/main.css">
   </head>
-  <body style="margin: 0px; overflow: hidden;">
-    <a-scene background="color: #FAFAFA">
-      <a-assets>
-        <a-asset-item id="tokyo" src="../../assets/ar/models/littlest-tokyo/scene.gltf"></a-asset-item>
-      </a-assets>
-      <a-entity position="0 0.5 -500" gltf-model="#tokyo"></a-entity>
-    </a-scene>
-    <script id="toaster-template" type="text/template">{{? it.isReload }}
-      <div class="toaster__card -refresh toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="btn-refresh js-refresh">REFRESH</button>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{?? }}
-      <div class="toaster__card toaster{{= it.ind }}">
-        <p>{{! it.message }}</p>
-        <button class="js-dismiss"><span class="sr-only">Close</span><i class="icon icon-cross"></i></button>
-      </div>{{? }}
-    </script>
-  </body>
+  <body style="margin: 0px; overflow: hidden;"></body>
 </html>

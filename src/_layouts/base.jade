@@ -57,8 +57,11 @@ html.no-js(lang='en')
     block stylesheets
       link(rel='stylesheet', href= baseUrl + 'assets/ar/css/main.css')
 
-  body(style='margin: 0px; overflow: hidden;')
-    block content
+  if hasAframeArNft || hasAframeAr || isARJSMarkerless
+    body(style='margin: 0px; overflow: hidden;')
+  else
+    body
+      block content
 
     block scripts
       if isMarkerless
