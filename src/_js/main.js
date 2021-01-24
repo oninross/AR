@@ -65,13 +65,15 @@ $(() => {
 
     const modelViewerTransform = document.querySelector("model-viewer");
 
-    const timer = setInterval(() => {
-        if (!!modelViewerTransform.updateFraming()) {
-            modelViewerTransform.scale = `0.1 0.1 0.1`;
-            modelViewerTransform.updateFraming();
-            clearInterval(timer);
-        }
-    }, 1000);
+    if (!!modelViewerTransform) {
+        const timer = setInterval(() => {
+            if (!!modelViewerTransform.updateFraming()) {
+                modelViewerTransform.scale = `0.1 0.1 0.1`;
+                modelViewerTransform.updateFraming();
+                clearInterval(timer);
+            }
+        }, 1000);
+    }
 
     console.log("I'm a AR!!!");
 });
