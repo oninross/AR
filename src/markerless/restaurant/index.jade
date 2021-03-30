@@ -1,0 +1,23 @@
+extends ../../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../../'
+  - var isMarkerless = true
+
+block content
+  //- japanese-restaurant
+  model-viewer(
+    alt = 'A 3D model of a Japanese restaurant',
+    ar = '',
+    ar-scale = 'auto'
+    autoplay = '',
+    background-color = '#222',
+    camera-controls = '',
+    ios-src = baseUrl + 'assets/ar/models/japanese-restaurant/japanese-restaurant.usdz',
+    magic-leap = '',
+    shadow-intensity = '1',
+    src = baseUrl + 'assets/ar/models/japanese-restaurant/scene.glb',
+    quick-look-browsers = '',
+    unstable-webxr = ''
+  )
